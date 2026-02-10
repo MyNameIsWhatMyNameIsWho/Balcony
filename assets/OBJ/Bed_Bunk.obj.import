@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cuqbnni6ph6sg"
+path="res://.godot/imported/Bed_Bunk.obj-1440f6bad1c091311116df773d63303e.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Bed_Bunk.obj-1440f6bad1c091311116df773d63303e.mesh"]
+
+source_file="res://assets/OBJ/Bed_Bunk.obj"
+dest_files=["res://.godot/imported/Bed_Bunk.obj-1440f6bad1c091311116df773d63303e.mesh", "res://.godot/imported/Bed_Bunk.obj-1440f6bad1c091311116df773d63303e.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

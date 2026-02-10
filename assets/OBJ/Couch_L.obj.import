@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://x5kyw4pe43ca"
+path="res://.godot/imported/Couch_L.obj-13634a11cb0e0c71010d7e3d98a435e0.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Couch_L.obj-13634a11cb0e0c71010d7e3d98a435e0.mesh"]
+
+source_file="res://assets/OBJ/Couch_L.obj"
+dest_files=["res://.godot/imported/Couch_L.obj-13634a11cb0e0c71010d7e3d98a435e0.mesh", "res://.godot/imported/Couch_L.obj-13634a11cb0e0c71010d7e3d98a435e0.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cddw2muj8dsti"
+path="res://.godot/imported/Table_RoundSmall.obj-b4ed4335f6a8ee4a01c4f29a9fd72599.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Table_RoundSmall.obj-b4ed4335f6a8ee4a01c4f29a9fd72599.mesh"]
+
+source_file="res://assets/OBJ/Table_RoundSmall.obj"
+dest_files=["res://.godot/imported/Table_RoundSmall.obj-b4ed4335f6a8ee4a01c4f29a9fd72599.mesh", "res://.godot/imported/Table_RoundSmall.obj-b4ed4335f6a8ee4a01c4f29a9fd72599.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

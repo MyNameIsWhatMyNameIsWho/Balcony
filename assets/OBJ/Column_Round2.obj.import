@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cpcn2ialia4na"
+path="res://.godot/imported/Column_Round2.obj-5a501dda7880cd00e7150f0880ff8860.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Column_Round2.obj-5a501dda7880cd00e7150f0880ff8860.mesh"]
+
+source_file="res://assets/OBJ/Column_Round2.obj"
+dest_files=["res://.godot/imported/Column_Round2.obj-5a501dda7880cd00e7150f0880ff8860.mesh", "res://.godot/imported/Column_Round2.obj-5a501dda7880cd00e7150f0880ff8860.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://ckks86jhk8mwx"
+path="res://.godot/imported/Column_SquareBig.obj-7e0ce1c6820b24cff399c58f3466b829.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Column_SquareBig.obj-7e0ce1c6820b24cff399c58f3466b829.mesh"]
+
+source_file="res://assets/OBJ/Column_SquareBig.obj"
+dest_files=["res://.godot/imported/Column_SquareBig.obj-7e0ce1c6820b24cff399c58f3466b829.mesh", "res://.godot/imported/Column_SquareBig.obj-7e0ce1c6820b24cff399c58f3466b829.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

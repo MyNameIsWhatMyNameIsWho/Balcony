@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cf2el1j2f3uvj"
+path="res://.godot/imported/Light_Stand2.obj-019a8ea155f4950ef0b5a51b99727613.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Light_Stand2.obj-019a8ea155f4950ef0b5a51b99727613.mesh"]
+
+source_file="res://assets/OBJ/Light_Stand2.obj"
+dest_files=["res://.godot/imported/Light_Stand2.obj-019a8ea155f4950ef0b5a51b99727613.mesh", "res://.godot/imported/Light_Stand2.obj-019a8ea155f4950ef0b5a51b99727613.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

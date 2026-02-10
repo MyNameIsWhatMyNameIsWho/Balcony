@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cjx6bu7ywqshf"
+path="res://.godot/imported/Kitchen_3Drawers.obj-36cbfad5921455c4e5da9b172c110887.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Kitchen_3Drawers.obj-36cbfad5921455c4e5da9b172c110887.mesh"]
+
+source_file="res://assets/OBJ/Kitchen_3Drawers.obj"
+dest_files=["res://.godot/imported/Kitchen_3Drawers.obj-36cbfad5921455c4e5da9b172c110887.mesh", "res://.godot/imported/Kitchen_3Drawers.obj-36cbfad5921455c4e5da9b172c110887.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

@@ -1,0 +1,63 @@
+[
+  {
+    "object_id": "bag",
+    "hint_text": "Press E",
+    "dialogue_id": "bag",
+    "lines": [
+      "I unzip it out of habit.",
+      "Nothing important inside.",
+      "Just wrappers, receipts, dust.",
+      "Good. Means I’m done."
+    ]
+  },
+  {
+    "object_id": "fridge",
+    "hint_text": "Press E",
+    "dialogue_id": "fridge",
+    "lines": [
+      "There’s food inside.",
+      "Nothing that fits how late it is.",
+      "I’ve eaten worse between stops.",
+      "Tomorrow-me can deal with this."
+    ]
+  },
+  {
+    "object_id": "chair",
+    "hint_text": "Press E",
+    "dialogue_id": "chair",
+    "lines": [
+      "The chair creaks the same way every time.",
+      "I haven’t fixed it.",
+      "We’ve reached an understanding."
+    ]
+  },
+  {
+    "object_id": "laptop",
+    "hint_text": "Press E",
+    "dialogue_id": "laptop",
+    "lines": [
+      "Battery’s low.",
+      "I close the lid without checking anything.",
+      "Whatever it was can wait."
+    ]
+  },
+  {
+    "object_id": "phone",
+    "hint_text": "Press E",
+    "dialogue_id": "phone",
+    "lines": [
+      "No new notifications.",
+      "That’s fine.",
+      "It means I didn’t miss a turn."
+    ]
+  },
+  {
+    "object_id": "balcony_door",
+    "hint_text": "Press E",
+    "dialogue_id": "balcony_door",
+    "lines": [
+      "Might as well step outside.",
+      "The city’s still doing things."
+    ]
+  }
+]

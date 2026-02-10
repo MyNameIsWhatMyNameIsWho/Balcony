@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cwnwakx1w13r5"
+path="res://.godot/imported/Kitchen_CabinetSmall.obj-b54c2614df381a3113a676ca8d41872c.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Kitchen_CabinetSmall.obj-b54c2614df381a3113a676ca8d41872c.mesh"]
+
+source_file="res://assets/OBJ/Kitchen_CabinetSmall.obj"
+dest_files=["res://.godot/imported/Kitchen_CabinetSmall.obj-b54c2614df381a3113a676ca8d41872c.mesh", "res://.godot/imported/Kitchen_CabinetSmall.obj-b54c2614df381a3113a676ca8d41872c.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

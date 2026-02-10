@@ -1,0 +1,48 @@
+[gd_scene load_steps=2 format=3 uid="uid://d3m72xg3yx1j1"]
+
+[ext_resource type="Script" path="res://scripts/EndingUI.gd" id="1_ending_ui"]
+
+[node name="EndingUI" type="CanvasLayer"]
+layer = 3
+script = ExtResource("1_ending_ui")
+
+[node name="Root" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+mouse_filter = 2
+
+[node name="Panel" type="Panel" parent="Root"]
+anchors_preset = 8
+anchor_left = 0.15
+anchor_top = 0.2
+anchor_right = 0.85
+anchor_bottom = 0.85
+
+[node name="Lines" type="VBoxContainer" parent="Root/Panel"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -72.0
+theme_override_constants/separation = 10
+
+[node name="Buttons" type="HBoxContainer" parent="Root/Panel"]
+anchors_preset = 10
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = -52.0
+offset_right = 160.0
+offset_bottom = -16.0
+theme_override_constants/separation = 12
+
+[node name="RestartButton" type="Button" parent="Root/Panel/Buttons"]
+text = "Restart"
+
+[node name="QuitButton" type="Button" parent="Root/Panel/Buttons"]
+text = "Quit"

@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dqayyoms1gauo"
+path="res://.godot/imported/Kitchen_Oven_Large.obj-3095edacc0a8fe5063a33a3b5461602d.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Kitchen_Oven_Large.obj-3095edacc0a8fe5063a33a3b5461602d.mesh"]
+
+source_file="res://assets/OBJ/Kitchen_Oven_Large.obj"
+dest_files=["res://.godot/imported/Kitchen_Oven_Large.obj-3095edacc0a8fe5063a33a3b5461602d.mesh", "res://.godot/imported/Kitchen_Oven_Large.obj-3095edacc0a8fe5063a33a3b5461602d.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

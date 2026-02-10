@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bj8avnwflpobb"
+path="res://.godot/imported/Carpet_1.obj-552f5f2cd7e1ed0ded2662a29148724e.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Carpet_1.obj-552f5f2cd7e1ed0ded2662a29148724e.mesh"]
+
+source_file="res://assets/OBJ/Carpet_1.obj"
+dest_files=["res://.godot/imported/Carpet_1.obj-552f5f2cd7e1ed0ded2662a29148724e.mesh", "res://.godot/imported/Carpet_1.obj-552f5f2cd7e1ed0ded2662a29148724e.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dypui4106jhtj"
+path="res://.godot/imported/Light_Cube.obj-aa2d8b78b76d20f546d758dcec1c78fb.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Light_Cube.obj-aa2d8b78b76d20f546d758dcec1c78fb.mesh"]
+
+source_file="res://assets/OBJ/Light_Cube.obj"
+dest_files=["res://.godot/imported/Light_Cube.obj-aa2d8b78b76d20f546d758dcec1c78fb.mesh", "res://.godot/imported/Light_Cube.obj-aa2d8b78b76d20f546d758dcec1c78fb.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

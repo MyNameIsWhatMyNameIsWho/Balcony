@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://rwxj1gu1m0r"
+path="res://.godot/imported/Knife.obj-d65484752cb738da5620e17521527eef.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Knife.obj-d65484752cb738da5620e17521527eef.mesh"]
+
+source_file="res://assets/OBJ/Knife.obj"
+dest_files=["res://.godot/imported/Knife.obj-d65484752cb738da5620e17521527eef.mesh", "res://.godot/imported/Knife.obj-d65484752cb738da5620e17521527eef.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

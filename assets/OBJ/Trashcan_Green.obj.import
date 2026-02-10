@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://8tvres5nj1m0"
+path="res://.godot/imported/Trashcan_Green.obj-ed4b6aaca002936161c260784e0c44df.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Trashcan_Green.obj-ed4b6aaca002936161c260784e0c44df.mesh"]
+
+source_file="res://assets/OBJ/Trashcan_Green.obj"
+dest_files=["res://.godot/imported/Trashcan_Green.obj-ed4b6aaca002936161c260784e0c44df.mesh", "res://.godot/imported/Trashcan_Green.obj-ed4b6aaca002936161c260784e0c44df.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

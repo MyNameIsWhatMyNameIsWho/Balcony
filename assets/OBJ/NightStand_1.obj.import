@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cyfan4il3bpi2"
+path="res://.godot/imported/NightStand_1.obj-a5e31617f5f58787616dabadea1e71d2.mesh"
+
+[deps]
+
+files=["res://.godot/imported/NightStand_1.obj-a5e31617f5f58787616dabadea1e71d2.mesh"]
+
+source_file="res://assets/OBJ/NightStand_1.obj"
+dest_files=["res://.godot/imported/NightStand_1.obj-a5e31617f5f58787616dabadea1e71d2.mesh", "res://.godot/imported/NightStand_1.obj-a5e31617f5f58787616dabadea1e71d2.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true

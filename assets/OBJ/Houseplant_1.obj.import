@@ -1,0 +1,21 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cyntw36364ibg"
+path="res://.godot/imported/Houseplant_1.obj-51906ddc170d1748bc9c2bd8f1d6f2b1.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Houseplant_1.obj-51906ddc170d1748bc9c2bd8f1d6f2b1.mesh"]
+
+source_file="res://assets/OBJ/Houseplant_1.obj"
+dest_files=["res://.godot/imported/Houseplant_1.obj-51906ddc170d1748bc9c2bd8f1d6f2b1.mesh", "res://.godot/imported/Houseplant_1.obj-51906ddc170d1748bc9c2bd8f1d6f2b1.mesh"]
+
+[params]
+
+generate_tangents=true
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+optimize_mesh=true
