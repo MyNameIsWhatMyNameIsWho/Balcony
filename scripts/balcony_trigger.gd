@@ -21,6 +21,16 @@ extends Area3D
 @export var pixelize_rect_path: NodePath = NodePath("../PostProcess/Pixelize")
 @export var pixel_size_in_selection: float = 28.0
 
+# Pixelation for StoryScreen only (building stays at selection pixel size).
+@export var storyscreen_pixel_size_during_camera_move: float = 64.0
+@export var storyscreen_pixel_size_in_focus: float = 8.0
+@export var storyscreen_pixel_pulse_peak_time: float = 0.55 # 0..1, portion of zoom to stay pixelated before clearing
+
+@export var window_base_texture: Texture2D
+# Window cover image shown on StoryScreen during zoom-in.
+@export var window_cover_texture: Texture2D
+@export var window_seen_texture: Texture2D
+
 var in_area := false
 var selection_active := false
 var window_focus_active := false
@@ -48,9 +58,14 @@ var pixelize_original_pixel_size: float = -1.0
 var pixelize_override_active := false
 
 var story_window_id: String = ""
+var story_window_node: Area3D = null
 var story_choice: String = ""
 var story_gained_fragment := false
 var story_data: Dictionary = {}
+var storyscreen_pixel_tween: Tween = null
+var last_seen_window_node: Area3D = null
+
+@onready var storyscreen_pixelate_shader: Shader = load("res://assets/storyscreen_pixelate.gdshader") as Shader
 
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
@@ -72,7 +87,9 @@ func _ready() -> void:
 		push_warning("BalconyTrigger: building_camera_path is not set or invalid.")
 
 	_cache_pixelize_original()
-	_hide_all_story_screens()
+	# Make windows look correct from the start (base/seen textures).
+	_prime_story_screens()
+	_set_all_story_screens_visible(true)
 
 func _cache_pixelize_original() -> void:
 	if pixelize_rect == null:
@@ -129,13 +146,43 @@ func _activate_selection() -> void:
 		dialogue_manager.set_external_controls_lock(true)
 	_focus_camera()
 	window_selector.set_enabled(true)
+	_prime_story_screens()
+	_set_all_story_screens_visible(true)
 	_update_stop_watching_visibility()
+
+func _prime_story_screens() -> void:
+	# Assign base picture (and seen picture for resolved windows) up front,
+	# so every StoryScreen is ready when it becomes visible.
+	if window_base_texture == null and window_seen_texture == null:
+		return
+	for node in get_tree().get_nodes_in_group("selectable_window"):
+		var w := node as Area3D
+		if w == null:
+			continue
+		var id := _get_window_id(w)
+		var tex: Texture2D = window_base_texture
+		if id != "" and GameState.is_resolved(id) and window_seen_texture != null:
+			tex = window_seen_texture
+		if tex != null:
+			_apply_story_texture(w, tex)
+			_set_storyscreen_pixel_size(w, storyscreen_pixel_size_in_focus)
+
+func _set_all_story_screens_visible(show: bool) -> void:
+	for node in get_tree().get_nodes_in_group("selectable_window"):
+		var w := node as Area3D
+		if w == null:
+			continue
+		var screen := _get_story_screen(w)
+		if screen:
+			screen.visible = show
 
 func _deactivate_selection() -> void:
 	selection_active = false
 	window_selector.set_enabled(false)
 	_hide_hover_text()
-	_hide_all_story_screens()
+	# Keep windows visible outside of balcony mode too (no sudden pop-in).
+	_prime_story_screens()
+	_set_all_story_screens_visible(true)
 	_set_pixelize_override(false)
 	_restore_camera()
 	if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
@@ -226,8 +273,11 @@ func _on_window_selected(window: Area3D) -> void:
 		dialogue_manager.close_choice()
 
 	_show_story_screen(window)
+	# Pixelate StoryScreen gradually while camera is moving in (pulse).
+	_start_storyscreen_pixel_pulse(window, zoom_duration)
 
 	story_window_id = window_id
+	story_window_node = window
 	story_choice = ""
 	story_gained_fragment = false
 
@@ -335,6 +385,114 @@ func _on_zoom_arrived(target_t: Transform3D) -> void:
 	zoom_in_progress = false
 	selection_pan = Vector2.ZERO
 	_set_breathe_base(target_t)
+	# Once zoom arrived, show StoryScreen in clearer resolution.
+	if storyscreen_pixel_tween:
+		storyscreen_pixel_tween.kill()
+		storyscreen_pixel_tween = null
+	_set_storyscreen_pixel_size(story_window_node, storyscreen_pixel_size_in_focus)
+
+func _get_story_screen(window: Area3D) -> MeshInstance3D:
+	if window == null:
+		return null
+	return window.get_node_or_null("StoryScreen") as MeshInstance3D
+
+func _get_or_create_storyscreen_material(screen: MeshInstance3D) -> ShaderMaterial:
+	if screen == null or storyscreen_pixelate_shader == null:
+		return null
+	var existing := screen.material_override as ShaderMaterial
+	if existing != null and existing.shader == storyscreen_pixelate_shader:
+		return existing
+	var mat := ShaderMaterial.new()
+	mat.shader = storyscreen_pixelate_shader
+	mat.set_shader_parameter("opacity", 1.0)
+	mat.set_shader_parameter("pixel_size", storyscreen_pixel_size_in_focus)
+	screen.material_override = mat
+	return mat
+
+func _set_storyscreen_pixel_size(window: Area3D, px: float) -> void:
+	var screen := _get_story_screen(window)
+	if screen == null:
+		return
+	var mat := _get_or_create_storyscreen_material(screen)
+	if mat == null:
+		return
+	mat.set_shader_parameter("pixel_size", maxf(px, 1.0))
+
+func _start_storyscreen_pixel_pulse(window: Area3D, duration: float) -> void:
+	# Start chunky immediately, then clear smoothly across the camera tween.
+	# Important: pixel_size should start changing immediately (no "hold").
+	if storyscreen_pixel_tween:
+		storyscreen_pixel_tween.kill()
+		storyscreen_pixel_tween = null
+
+	var screen := _get_story_screen(window)
+	if screen == null:
+		return
+	var mat := _get_or_create_storyscreen_material(screen)
+	if mat == null:
+		return
+
+	var d := maxf(duration, 0.01)
+	var peak_t := clampf(storyscreen_pixel_pulse_peak_time, 0.05, 0.95)
+	var t_soft := maxf(d * peak_t, 0.01)
+	var t_clear := maxf(d - t_soft, 0.01)
+
+	var focus_px := maxf(storyscreen_pixel_size_in_focus, 1.0)
+	var peak_px := maxf(storyscreen_pixel_size_during_camera_move, 1.0)
+	# Important: make it unclear immediately on click.
+	mat.set_shader_parameter("pixel_size", peak_px)
+
+	# First phase: barely starts clearing (still unclear, but changing).
+	var mid_px := lerpf(peak_px, focus_px, 0.15)
+
+	storyscreen_pixel_tween = get_tree().create_tween()
+	storyscreen_pixel_tween.tween_property(mat, "shader_parameter/pixel_size", mid_px, t_soft)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_IN_OUT)
+	storyscreen_pixel_tween.tween_property(mat, "shader_parameter/pixel_size", focus_px, t_clear)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_OUT)
+
+func _start_storyscreen_pixel_return(window: Area3D, duration: float) -> void:
+	# Return tween: chunky -> crisp across the camera return.
+	if storyscreen_pixel_tween:
+		storyscreen_pixel_tween.kill()
+		storyscreen_pixel_tween = null
+
+	var screen := _get_story_screen(window)
+	if screen == null:
+		return
+	var mat := _get_or_create_storyscreen_material(screen)
+	if mat == null:
+		return
+
+	var d := maxf(duration, 0.01)
+	var focus_px := maxf(storyscreen_pixel_size_in_focus, 1.0)
+	var start_px := maxf(storyscreen_pixel_size_during_camera_move, 1.0)
+
+	mat.set_shader_parameter("pixel_size", start_px)
+
+	storyscreen_pixel_tween = get_tree().create_tween()
+	storyscreen_pixel_tween.tween_property(mat, "shader_parameter/pixel_size", focus_px, d)\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_OUT)
+
+func _apply_story_texture(window: Area3D, tex: Texture2D) -> void:
+	var screen := _get_story_screen(window)
+	if screen == null:
+		push_warning("BalconyTrigger: No StoryScreen under window: " + str(window.name))
+		return
+	if tex == null:
+		push_warning("BalconyTrigger: story texture is null (assign it in inspector).")
+		return
+
+	var mat := _get_or_create_storyscreen_material(screen)
+	if mat == null:
+		return
+	mat.set_shader_parameter("story_tex", tex)
+	var sz := tex.get_size()
+	if sz.x > 0 and sz.y > 0:
+		mat.set_shader_parameter("tex_size", Vector2(float(sz.x), float(sz.y)))
 
 func _process(delta: float) -> void:
 	if building_camera == null:
@@ -454,9 +612,13 @@ func _on_window_choice_made(choice: String) -> void:
 
 func _cancel_window_story() -> void:
 	story_window_id = ""
+	story_window_node = null
 	story_choice = ""
 	story_gained_fragment = false
 	story_data = {}
+	if storyscreen_pixel_tween:
+		storyscreen_pixel_tween.kill()
+		storyscreen_pixel_tween = null
 
 	if dialogue_manager and dialogue_manager.has_method("close_choice"):
 		dialogue_manager.close_choice()
@@ -472,10 +634,17 @@ func _resolve_window_and_return() -> void:
 		if story_choice == "B":
 			GameState.add_avoid()
 
+	# Remember which window was just seen so we can swap its StoryScreen on return.
+	last_seen_window_node = story_window_node
+
 	story_window_id = ""
+	story_window_node = null
 	story_choice = ""
 	story_gained_fragment = false
 	story_data = {}
+	if storyscreen_pixel_tween:
+		storyscreen_pixel_tween.kill()
+		storyscreen_pixel_tween = null
 
 	_update_stop_watching_visibility()
 	_return_to_selection()
@@ -519,7 +688,19 @@ func _return_to_selection() -> void:
 	window_selector.set_enabled(false)
 	_hide_hover_text()
 
+	# While the camera moves back out, keep other windows showing base/seen
+	# (so they don't flash gray).
+	_prime_story_screens()
+	_set_all_story_screens_visible(true)
+
 	if building_camera and has_building_camera_home:
+		# While returning, transition StoryScreen pixels back smoothly (64 -> 8).
+		if last_seen_window_node != null:
+			# Keep the just-opened window on the cover during the return move.
+			if window_cover_texture != null:
+				_apply_story_texture(last_seen_window_node, window_cover_texture)
+			_start_storyscreen_pixel_return(last_seen_window_node, return_duration)
+
 		if zoom_tween:
 			zoom_tween.kill()
 
@@ -538,6 +719,12 @@ func _on_return_arrived() -> void:
 	if building_camera and has_building_camera_home:
 		_set_breathe_base(camera_start_transform)
 
+	# Once we're back in selection, swap the last seen window's StoryScreen image.
+	if last_seen_window_node != null and window_seen_texture != null:
+		_apply_story_texture(last_seen_window_node, window_seen_texture)
+		_set_storyscreen_pixel_size(last_seen_window_node, storyscreen_pixel_size_in_focus)
+		last_seen_window_node = null
+
 	if in_area:
 		_activate_selection()
 	else:
@@ -555,10 +742,13 @@ func _get_window_id(window: Area3D) -> String:
 	return s
 
 func _show_story_screen(window: Area3D) -> void:
-	_hide_all_story_screens()
+	# During zoom-in, keep other windows on base/seen; only the selected window switches to cover.
+	_prime_story_screens()
+	_set_all_story_screens_visible(true)
 	var screen := window.get_node_or_null("StoryScreen") as MeshInstance3D
 	if screen:
 		screen.visible = true
+		_apply_story_texture(window, window_cover_texture)
 
 func _hide_all_story_screens() -> void:
 	for node in get_tree().get_nodes_in_group("selectable_window"):

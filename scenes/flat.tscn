@@ -1,4 +1,4 @@
-[gd_scene load_steps=65 format=3 uid="uid://xh154ie053j1"]
+[gd_scene load_steps=70 format=3 uid="uid://xh154ie053j1"]
 
 [ext_resource type="PackedScene" uid="uid://dkhawoo8pj11p" path="res://scenes/character.tscn" id="1_4y78d"]
 [ext_resource type="Material" uid="uid://dk4csq0og1l3w" path="res://assets/new_standard_material_3d.tres" id="2_u0wvv"]
@@ -9,10 +9,13 @@
 [ext_resource type="ArrayMesh" uid="uid://ncaaajktjdiu" path="res://assets/OBJ/Chair_1.obj" id="5_n8btb"]
 [ext_resource type="ArrayMesh" uid="uid://idhcw35kt1ky" path="res://assets/OBJ/Couch_Medium2.obj" id="6_pimkc"]
 [ext_resource type="Script" path="res://scripts/WindowData.gd" id="6_window_data"]
+[ext_resource type="Texture2D" uid="uid://bu1x2b5fa168q" path="res://assets/window_covers/window_cover.png" id="7_jcmmq"]
 [ext_resource type="ArrayMesh" uid="uid://clht7tc120gs3" path="res://assets/OBJ/Kitchen_1Drawers.obj" id="7_qu5lk"]
+[ext_resource type="Texture2D" uid="uid://dov0hexwnso52" path="res://assets/window_covers/base_window_coveer.png" id="8_00716"]
 [ext_resource type="Texture2D" uid="uid://c3my26d5cbanl" path="res://assets/textures/Buidling_4_baseColor.jpeg" id="8_c6c0t"]
 [ext_resource type="ArrayMesh" uid="uid://bcwwtbxw8vlap" path="res://assets/OBJ/Kitchen_2Drawers.obj" id="8_wxaa3"]
 [ext_resource type="ArrayMesh" uid="uid://cjx6bu7ywqshf" path="res://assets/OBJ/Kitchen_3Drawers.obj" id="9_7i7dl"]
+[ext_resource type="Texture2D" uid="uid://b8d2eg1wc8y7p" path="res://assets/window_covers/seen_window.png" id="9_mapy8"]
 [ext_resource type="Texture2D" uid="uid://rw7buxl6giuf" path="res://assets/textures/Buidling_4_metallicRoughness.png" id="9_pdsn3"]
 [ext_resource type="ArrayMesh" uid="uid://ipb3c87xmbou" path="res://assets/OBJ/Kitchen_Cabinet1.obj" id="10_t7tpx"]
 [ext_resource type="Texture2D" uid="uid://dhxf3itl57xd6" path="res://assets/textures/Buidling_4_normal.png" id="10_wii4h"]
@@ -27,6 +30,7 @@
 [ext_resource type="Texture2D" uid="uid://050rubp4ec8c" path="res://assets/textures/Building_1_baseColor.jpeg" id="25_sedw5"]
 [ext_resource type="Texture2D" uid="uid://8kht62daxoif" path="res://assets/textures/Building_1_metallicRoughness.png" id="26_vgibu"]
 [ext_resource type="Texture2D" uid="uid://cmkois4i88d3r" path="res://assets/textures/Building_1_normal.png" id="27_h8ih5"]
+[ext_resource type="ArrayMesh" uid="uid://chnnxx14uq4ad" path="res://assets/OBJ/Bookshelf.obj" id="30_v528h"]
 
 [sub_resource type="LabelSettings" id="LabelSettings_j5v5p"]
 font_size = 40
@@ -226,6 +230,9 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_w7xjk")
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_566nl"]
+albedo_color = Color(0.258824, 0.152941, 0, 1)
+
 [node name="Flat" type="Node3D"]
 
 [node name="DialogueUI" type="CanvasLayer" parent="."]
@@ -409,35 +416,35 @@ fov = 68.5
 [node name="WindowCameras" type="Node3D" parent="."]
 
 [node name="Cam_Window1" type="Camera3D" parent="WindowCameras"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.986013, 2.82486, -7.4911)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.986013, 2.86823, -8.12031)
 fov = 68.5
 
 [node name="Cam_Window2" type="Camera3D" parent="WindowCameras"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.31598, 2.82209, -7.49075)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.31598, 2.86546, -8.11996)
 fov = 68.5
 
 [node name="Cam_Window3" type="Camera3D" parent="WindowCameras"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.966278, 0.389754, -7.49075)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.966278, 0.433127, -8.11996)
 fov = 68.5
 
 [node name="Cam_Window4" type="Camera3D" parent="WindowCameras"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6309, 0.432099, -7.49075)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.6309, 0.475472, -8.11996)
 fov = 68.5
 
 [node name="Cam_Window5" type="Camera3D" parent="WindowCameras"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.983598, 5.20817, -7.49075)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.983598, 5.25154, -8.11996)
 fov = 68.5
 
 [node name="Cam_Window6" type="Camera3D" parent="WindowCameras"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.30096, 5.24472, -7.49075)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.30096, 5.28809, -8.11996)
 fov = 68.5
 
 [node name="Cam_Window7" type="Camera3D" parent="WindowCameras"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.62726, 5.19936, -7.49075)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.62726, 5.24273, -8.11996)
 fov = 68.5
 
 [node name="Cam_Window8" type="Camera3D" parent="WindowCameras"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.63091, 2.91824, -7.49075)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.63091, 2.96161, -8.11996)
 fov = 68.5
 
 [node name="WindowSelector" type="Node" parent="."]
@@ -453,12 +460,17 @@ window_selector_path = NodePath("../WindowSelector")
 building_camera_path = NodePath("../BuildingCamera")
 dialogue_manager_path = NodePath("../DialogueUI")
 ending_ui_path = NodePath("../EndingUI")
-return_duration = 1.0
+zoom_duration = 2.0
+focus_duration = 1.0
+return_duration = 1.5
 balcony_breathe_amplitude = 0.02
 balcony_breathe_speed = 0.5
 selection_pan_max = Vector2(0.4, 2)
 selection_pan_smoothing_y = 3.0
 pixel_size_in_selection = 8.0
+window_base_texture = ExtResource("8_00716")
+window_cover_texture = ExtResource("7_jcmmq")
+window_seen_texture = ExtResource("9_mapy8")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BalconyTrigger"]
 shape = SubResource("BoxShape3D_trigger")
@@ -481,8 +493,7 @@ material_override = SubResource("StandardMaterial3D_window")
 mesh = SubResource("QuadMesh_window")
 
 [node name="StoryScreen" type="MeshInstance3D" parent="Building/Windows/Window1"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0500002)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00319576)
 material_override = SubResource("StandardMaterial3D_story")
 mesh = SubResource("QuadMesh_story")
 
@@ -502,8 +513,7 @@ material_override = SubResource("StandardMaterial3D_window")
 mesh = SubResource("QuadMesh_window")
 
 [node name="StoryScreen" type="MeshInstance3D" parent="Building/Windows/Window2"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0500002)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00319481)
 material_override = SubResource("StandardMaterial3D_story")
 mesh = SubResource("QuadMesh_story")
 
@@ -523,8 +533,7 @@ material_override = SubResource("StandardMaterial3D_window")
 mesh = SubResource("QuadMesh_window")
 
 [node name="StoryScreen" type="MeshInstance3D" parent="Building/Windows/Window3"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0500002)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00319481)
 material_override = SubResource("StandardMaterial3D_story")
 mesh = SubResource("QuadMesh_story")
 
@@ -544,8 +553,7 @@ material_override = SubResource("StandardMaterial3D_window")
 mesh = SubResource("QuadMesh_window")
 
 [node name="StoryScreen" type="MeshInstance3D" parent="Building/Windows/Window4"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0500002)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00319481)
 material_override = SubResource("StandardMaterial3D_story")
 mesh = SubResource("QuadMesh_story")
 
@@ -565,8 +573,7 @@ material_override = SubResource("StandardMaterial3D_window")
 mesh = SubResource("QuadMesh_window")
 
 [node name="StoryScreen" type="MeshInstance3D" parent="Building/Windows/Window5"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0500002)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00319481)
 material_override = SubResource("StandardMaterial3D_story")
 mesh = SubResource("QuadMesh_story")
 
@@ -586,8 +593,7 @@ material_override = SubResource("StandardMaterial3D_window")
 mesh = SubResource("QuadMesh_window")
 
 [node name="StoryScreen" type="MeshInstance3D" parent="Building/Windows/Window6"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0500002)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00319481)
 material_override = SubResource("StandardMaterial3D_story")
 mesh = SubResource("QuadMesh_story")
 
@@ -607,8 +613,7 @@ material_override = SubResource("StandardMaterial3D_window")
 mesh = SubResource("QuadMesh_window")
 
 [node name="StoryScreen" type="MeshInstance3D" parent="Building/Windows/Window7"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0500002)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00319481)
 material_override = SubResource("StandardMaterial3D_story")
 mesh = SubResource("QuadMesh_story")
 
@@ -628,8 +633,7 @@ material_override = SubResource("StandardMaterial3D_window")
 mesh = SubResource("QuadMesh_window")
 
 [node name="StoryScreen" type="MeshInstance3D" parent="Building/Windows/Window8"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.0500002)
-visible = false
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.00319481)
 material_override = SubResource("StandardMaterial3D_story")
 mesh = SubResource("QuadMesh_story")
 
@@ -838,3 +842,13 @@ visible = false
 [node name="Building_1_Building_1_0" type="MeshInstance3D" parent="Building_1"]
 mesh = SubResource("ArrayMesh_yr28r")
 skeleton = NodePath("")
+
+[node name="Bookshelf" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.486988, -0.000774294, -0.0692544, -0.108391, -0.00347882, -0.311153, -5.30006e-12, 0.518262, -0.00219208, 1.27788, 0.734999, -11.1725)
+mesh = ExtResource("30_v528h")
+surface_material_override/0 = SubResource("StandardMaterial3D_566nl")
+
+[node name="Bookshelf2" type="MeshInstance3D" parent="."]
+transform = Transform3D(0.490086, 0.000667146, 0.0596708, 0.0933914, -0.00350095, -0.313132, 6.86341e-11, 0.518262, -0.00219208, 1.26795, 0.236705, -11.1725)
+mesh = ExtResource("30_v528h")
+surface_material_override/0 = SubResource("StandardMaterial3D_566nl")

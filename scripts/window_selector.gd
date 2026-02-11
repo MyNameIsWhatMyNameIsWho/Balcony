@@ -15,6 +15,7 @@ var windows: Array[Node] = []
 var original_materials := {}
 
 @onready var camera: Camera3D = get_node(camera_path)
+@onready var storyscreen_shader: Shader = preload("res://assets/storyscreen_pixelate.gdshader")
 
 func _ready() -> void:
  windows = get_tree().get_nodes_in_group("selectable_window")
@@ -59,6 +60,7 @@ func _set_highlight(target: Area3D) -> void:
   var prev_mesh := current_window.get_node("WindowMesh") as MeshInstance3D
   if original_materials.has(current_window):
    prev_mesh.material_override = original_materials[current_window]
+  _set_storyscreen_hover(current_window, false)
   window_unhovered.emit(current_window)
  current_window = target
  if current_window and highlight_material:
@@ -66,4 +68,18 @@ func _set_highlight(target: Area3D) -> void:
   if not original_materials.has(current_window):
    original_materials[current_window] = mesh.material_override
   mesh.material_override = highlight_material
+  _set_storyscreen_hover(current_window, true)
   window_hovered.emit(current_window)
+
+func _set_storyscreen_hover(window: Area3D, hovered: bool) -> void:
+ if window == null:
+  return
+ var screen := window.get_node_or_null("StoryScreen") as MeshInstance3D
+ if screen == null:
+  return
+ var mat := screen.material_override as ShaderMaterial
+ if mat == null:
+  return
+ if mat.shader != storyscreen_shader:
+  return
+ mat.set_shader_parameter("hover", 1.0 if hovered else 0.0)
