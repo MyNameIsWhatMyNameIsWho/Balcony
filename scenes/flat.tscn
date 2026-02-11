@@ -23,7 +23,7 @@
 [ext_resource type="Script" path="res://scripts/dialogue_manager.gd" id="16_dialogue_manager"]
 [ext_resource type="Script" path="res://scripts/interactable_dialogue.gd" id="17_interactable_dialogue"]
 [ext_resource type="Script" path="res://scripts/DebugFragments.gd" id="18_debug_fragments"]
-[ext_resource type="PackedScene" path="res://scenes/EndingUI.tscn" id="21_ending_ui"]
+[ext_resource type="PackedScene" uid="uid://d3m72xg3yx1j1" path="res://scenes/EndingUI.tscn" id="21_ending_ui"]
 [ext_resource type="Texture2D" uid="uid://050rubp4ec8c" path="res://assets/textures/Building_1_baseColor.jpeg" id="25_sedw5"]
 [ext_resource type="Texture2D" uid="uid://8kht62daxoif" path="res://assets/textures/Building_1_metallicRoughness.png" id="26_vgibu"]
 [ext_resource type="Texture2D" uid="uid://cmkois4i88d3r" path="res://assets/textures/Building_1_normal.png" id="27_h8ih5"]
@@ -458,7 +458,7 @@ balcony_breathe_amplitude = 0.02
 balcony_breathe_speed = 0.5
 selection_pan_max = Vector2(0.4, 2)
 selection_pan_smoothing_y = 3.0
-pixel_size_in_selection = 10.0
+pixel_size_in_selection = 8.0
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="BalconyTrigger"]
 shape = SubResource("BoxShape3D_trigger")
