@@ -108,6 +108,12 @@ func _split_into_blocks(lines: Array[String]) -> Array[String]:
 		blocks.append("\n".join(buffer))
 	return blocks
 
+func show_blocked_dialogue(lines: Array[String], dialogue_id: String = "", lock_controls: bool = true) -> void:
+	# Same behavior as intro: JSON lines are grouped into blocks separated by empty lines.
+	var blocks := _split_into_blocks(lines)
+	if blocks.size() > 0:
+		show_dialogue(blocks, dialogue_id, lock_controls)
+
 func show_dialogue(lines: Array[String], dialogue_id: String = "", lock_controls: bool = true) -> void:
 	if lines.is_empty():
 		return
@@ -142,9 +148,6 @@ func _input(event: InputEvent) -> void:
 			_finish_typing_line()
 		else:
 			_advance()
-	elif event.is_action_pressed("ui_cancel"):
-		# For window story flow: Esc behaves like "continue" (Option A) when dialogue is active.
-		request_continue()
 	elif is_choice_open():
 		if event.is_action_pressed("move_left"):
 			_select_choice("A")

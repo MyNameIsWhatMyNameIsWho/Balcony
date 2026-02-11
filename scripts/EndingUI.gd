@@ -36,4 +36,6 @@ func _on_restart_pressed() -> void:
 	get_tree().change_scene_to_file(start_scene_path)
 
 func _on_quit_pressed() -> void:
+	# Ensure a fresh run when returning to menu.
+	GameState.reset_run()
 	get_tree().change_scene_to_file(menu_scene_path)

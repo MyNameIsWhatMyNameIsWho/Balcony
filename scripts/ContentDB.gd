@@ -9,6 +9,9 @@ var flat: Dictionary = {} # object_id -> Dictionary
 # intro.json: Array[String]
 var intro_lines: Array[String] = []
 
+# balcony_enter.json: Array[String] (blocks separated by empty lines)
+var balcony_enter_lines: Array[String] = []
+
 # endings.json: Array[Dictionary]
 var endings: Array[Dictionary] = []
 
@@ -16,6 +19,7 @@ func _ready() -> void:
 	_load_windows()
 	_load_flat()
 	_load_intro()
+	_load_balcony_enter()
 	_load_endings()
 
 # NOTE: Godot 4's Node already has get_window() -> Window.
@@ -35,6 +39,9 @@ func get_flat(object_id: String) -> Dictionary:
 
 func get_intro_lines() -> Array[String]:
 	return intro_lines
+
+func get_balcony_enter_lines() -> Array[String]:
+	return balcony_enter_lines
 
 func find_ending(fragments: int, avoids: int) -> Dictionary:
 	# 1) Avoidance endings first (if avoids + fragments range match)
@@ -146,6 +153,18 @@ func _load_intro() -> void:
 		return
 	for line in data:
 		intro_lines.append(str(line))
+
+func _load_balcony_enter() -> void:
+	balcony_enter_lines.clear()
+	var data: Variant = _read_json("res://data/balcony_enter.json")
+	if data == null:
+		# Optional file.
+		return
+	if typeof(data) != TYPE_ARRAY:
+		push_warning("ContentDB: balcony_enter.json must be an Array of Strings")
+		return
+	for line in data:
+		balcony_enter_lines.append(str(line))
 
 func _load_endings() -> void:
 	endings.clear()

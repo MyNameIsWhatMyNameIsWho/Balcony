@@ -16,6 +16,7 @@ extends Area3D
 @export var selection_pan_curve: float = 1.6
 @export var selection_pan_smoothing: float = 7.0 # X smoothing
 @export var selection_pan_smoothing_y: float = 4.0 # Y smoothing (slower feels more "floaty")
+@export var selection_pan_y_reach: float = 0.5 # normalized Y where we hit max pan (0.5 ~= 1/4 from top/bottom)
 
 # Pixelization override while selecting windows (PostProcess/Pixelize shader).
 @export var pixelize_rect_path: NodePath = NodePath("../PostProcess/Pixelize")
@@ -30,6 +31,7 @@ extends Area3D
 # Window cover image shown on StoryScreen during zoom-in.
 @export var window_cover_texture: Texture2D
 @export var window_seen_texture: Texture2D
+
 
 var in_area := false
 var selection_active := false
@@ -56,6 +58,7 @@ var has_breathe_base := false
 var selection_pan: Vector2 = Vector2.ZERO
 var pixelize_original_pixel_size: float = -1.0
 var pixelize_override_active := false
+var pixelize_tween: Tween = null
 
 var story_window_id: String = ""
 var story_window_node: Area3D = null
@@ -64,6 +67,10 @@ var story_gained_fragment := false
 var story_data: Dictionary = {}
 var storyscreen_pixel_tween: Tween = null
 var last_seen_window_node: Area3D = null
+
+var balcony_intro_active := false
+var balcony_intro_done := false
+var balcony_focus_done := false
 
 @onready var storyscreen_pixelate_shader: Shader = load("res://assets/storyscreen_pixelate.gdshader") as Shader
 
@@ -123,13 +130,28 @@ func _set_pixelize_override(active_now: bool) -> void:
 		if pixelize_original_pixel_size > 0.0:
 			mat.set_shader_parameter("pixel_size", pixelize_original_pixel_size)
 
+func _tween_pixel_size(from_px: float, to_px: float, duration: float) -> void:
+	if pixelize_rect == null:
+		return
+	var mat := pixelize_rect.material as ShaderMaterial
+	if mat == null:
+		return
+	if pixelize_tween:
+		pixelize_tween.kill()
+		pixelize_tween = null
+	mat.set_shader_parameter("pixel_size", maxf(from_px, 0.0))
+	pixelize_tween = get_tree().create_tween()
+	pixelize_tween.tween_property(mat, "shader_parameter/pixel_size", maxf(to_px, 0.0), maxf(duration, 0.01))\
+		.set_trans(Tween.TRANS_SINE)\
+		.set_ease(Tween.EASE_IN_OUT)
+
 func _on_body_entered(body: Node) -> void:
 	if body != character:
 		return
 	in_area = true
-	if cooldown or selection_active:
+	if cooldown or selection_active or balcony_intro_active:
 		return
-	_activate_selection()
+	_start_balcony_intro()
 
 func _on_body_exited(body: Node) -> void:
 	if body != character:
@@ -140,7 +162,8 @@ func _on_body_exited(body: Node) -> void:
 func _activate_selection() -> void:
 	selection_active = true
 	window_focus_active = false
-	character.set_controls_enabled(false)
+	# Selection mode: movement off, cursor visible.
+	character.set_controls_enabled(false, true)
 	_set_pixelize_override(true)
 	if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
 		dialogue_manager.set_external_controls_lock(true)
@@ -149,6 +172,70 @@ func _activate_selection() -> void:
 	_prime_story_screens()
 	_set_all_story_screens_visible(true)
 	_update_stop_watching_visibility()
+
+func _activate_selection_after_intro() -> void:
+	# Same as _activate_selection, but assumes building camera focus already started.
+	selection_active = true
+	window_focus_active = false
+	# Selection mode: movement off, cursor visible.
+	character.set_controls_enabled(false, true)
+	_set_pixelize_override(true)
+	if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
+		dialogue_manager.set_external_controls_lock(true)
+	window_selector.set_enabled(true)
+	_prime_story_screens()
+	_set_all_story_screens_visible(true)
+	_update_stop_watching_visibility()
+
+func _start_balcony_intro() -> void:
+	balcony_intro_active = true
+	balcony_intro_done = false
+	balcony_focus_done = false
+
+	selection_active = false
+	window_focus_active = false
+	window_selector.set_enabled(false)
+	_hide_hover_text()
+	_prime_story_screens()
+	_set_all_story_screens_visible(true)
+
+	# Lock movement immediately but keep cursor hidden/captured during intro.
+	character.set_controls_enabled(false, false)
+	if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
+		dialogue_manager.set_external_controls_lock(true)
+
+	# Start camera transition and intro text at the same time.
+	_focus_camera()
+	_set_pixelize_override(true)
+	# Smooth pixelization during focus-in (e.g. 16 -> 8).
+	if pixelize_original_pixel_size < 0.0:
+		_cache_pixelize_original()
+	if pixelize_original_pixel_size > 0.0 and pixel_size_in_selection > 0.0:
+		_tween_pixel_size(pixelize_original_pixel_size, pixel_size_in_selection, focus_duration)
+
+	if dialogue_manager and dialogue_manager.has_signal("dialogue_finished"):
+		# Safety: ensure we only respond to our intro once.
+		pass
+
+	var enter_lines: Array[String] = ContentDB.get_balcony_enter_lines()
+	if dialogue_manager and dialogue_manager.has_method("show_blocked_dialogue") and enter_lines.size() > 0:
+		dialogue_manager.show_blocked_dialogue(enter_lines, "balcony_enter", false)
+	else:
+		balcony_intro_done = true
+		_maybe_finish_balcony_intro()
+
+func _maybe_finish_balcony_intro() -> void:
+	if not balcony_intro_active:
+		return
+	if not balcony_intro_done:
+		return
+	if not balcony_focus_done:
+		return
+	balcony_intro_active = false
+	if in_area:
+		_activate_selection_after_intro()
+	else:
+		_deactivate_selection()
 
 func _prime_story_screens() -> void:
 	# Assign base picture (and seen picture for resolved windows) up front,
@@ -229,6 +316,9 @@ func _focus_camera() -> void:
 func _on_focus_arrived() -> void:
 	focus_in_progress = false
 	_set_breathe_base(camera_start_transform)
+	if balcony_intro_active:
+		balcony_focus_done = true
+		_maybe_finish_balcony_intro()
 
 func _set_breathe_base(t: Transform3D) -> void:
 	building_camera_breathe_base = t
@@ -323,25 +413,6 @@ func _hide_hover_text() -> void:
 func _input(event: InputEvent) -> void:
 	if not window_focus_active:
 		return
-
-	if event.is_action_pressed("ui_cancel"):
-		# If we're inside the window story flow:
-		if dialogue_manager:
-			if dialogue_manager.has_method("is_choice_open") and dialogue_manager.is_choice_open():
-				_cancel_window_story()
-				return
-			if dialogue_manager.has_method("is_active") and dialogue_manager.is_active():
-				if dialogue_manager.has_method("request_continue"):
-					dialogue_manager.request_continue()
-				return
-
-		# If camera is tweening in, cancel back to selection.
-		if zoom_tween:
-			_cancel_window_story()
-			return
-
-		window_focus_active = false
-		_deactivate_selection()
 
 func _ease_to_window_camera(window: Area3D) -> void:
 	if building_camera == null:
@@ -521,6 +592,8 @@ func _process(delta: float) -> void:
 			ny = _apply_deadzone(ny, selection_pan_deadzone)
 			nx = _apply_curve(nx, selection_pan_curve)
 			ny = _apply_curve(ny, selection_pan_curve)
+			# Make vertical reach easier: hit max pan earlier, then clamp.
+			ny = _apply_reach(ny, selection_pan_y_reach)
 			target_pan = Vector2(nx * selection_pan_max.x, ny * selection_pan_max.y)
 
 		# Smooth pan so it feels cinematic, not snappy.
@@ -554,6 +627,11 @@ func _apply_curve(v: float, curve: float) -> float:
 	var c := maxf(curve, 1.0)
 	return signf(v) * pow(absf(v), c)
 
+func _apply_reach(v: float, reach: float) -> float:
+	# If reach = 0.5, then v=0.5 maps to 1.0 (max), i.e. you don't need to hit screen edge.
+	var r := clampf(reach, 0.05, 1.0)
+	return clampf(v / r, -1.0, 1.0)
+
 func _start_story_after_camera(window_id: String) -> void:
 	if dialogue_manager == null:
 		return
@@ -579,6 +657,11 @@ func _on_camera_arrived(window_id: String) -> void:
 	dialogue_manager.show_dialogue(vignette_lines, "window_vignette:" + window_id, true)
 
 func _on_dialogue_finished(dialogue_id: String) -> void:
+	if balcony_intro_active and dialogue_id == "balcony_enter":
+		balcony_intro_done = true
+		_maybe_finish_balcony_intro()
+		return
+
 	if story_window_id == "":
 		return
 
