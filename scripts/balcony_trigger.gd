@@ -27,6 +27,9 @@ extends Area3D
 @export var storyscreen_pixel_size_in_focus: float = 8.0
 @export var storyscreen_pixel_pulse_peak_time: float = 0.55 # 0..1, portion of zoom to stay pixelated before clearing
 
+# DEBUG: press E during zoom-in to instantly snap camera to target.
+@export var debug_skip_zoom_on_interact: bool = true
+
 @export var window_base_texture: Texture2D
 # Window cover image shown on StoryScreen during zoom-in.
 @export var window_cover_texture: Texture2D
@@ -52,6 +55,8 @@ var focus_tween: Tween = null
 var has_building_camera_home := false
 var focus_in_progress := false
 var zoom_in_progress := false
+var zoom_target_transform: Transform3D
+var has_zoom_target := false
 var balcony_breathe_time := 0.0
 var building_camera_breathe_base: Transform3D
 var has_breathe_base := false
@@ -212,10 +217,6 @@ func _start_balcony_intro() -> void:
 		_cache_pixelize_original()
 	if pixelize_original_pixel_size > 0.0 and pixel_size_in_selection > 0.0:
 		_tween_pixel_size(pixelize_original_pixel_size, pixel_size_in_selection, focus_duration)
-
-	if dialogue_manager and dialogue_manager.has_signal("dialogue_finished"):
-		# Safety: ensure we only respond to our intro once.
-		pass
 
 	var enter_lines: Array[String] = ContentDB.get_balcony_enter_lines()
 	if dialogue_manager and dialogue_manager.has_method("show_blocked_dialogue") and enter_lines.size() > 0:
@@ -410,23 +411,22 @@ func _hide_hover_text() -> void:
 	if dialogue_manager:
 		dialogue_manager.hide_hover_line()
 
-func _input(event: InputEvent) -> void:
-	if not window_focus_active:
-		return
-
 func _ease_to_window_camera(window: Area3D) -> void:
 	if building_camera == null:
 		return
 
 	if zoom_tween:
 		zoom_tween.kill()
+	has_zoom_target = false
 
 	# Optional per-window authored camera target (if you use it).
 	var target_camera: Camera3D = null
-	var cam_path: NodePath = NodePath("")
+	var cam_path := NodePath("")
 
 	if window != null:
-		cam_path = window.get("window_camera_path")
+		var window_camera_path: Variant = window.get("window_camera_path")
+		if typeof(window_camera_path) == TYPE_NODE_PATH:
+			cam_path = window_camera_path as NodePath
 
 	if cam_path != NodePath(""):
 		target_camera = window.get_node_or_null(cam_path) as Camera3D
@@ -434,10 +434,12 @@ func _ease_to_window_camera(window: Area3D) -> void:
 			target_camera = get_node_or_null(cam_path) as Camera3D
 
 	if target_camera:
+		zoom_target_transform = target_camera.global_transform
+		has_zoom_target = true
 		zoom_tween = get_tree().create_tween()
 		zoom_in_progress = true
-		zoom_tween.tween_property(building_camera, "global_transform", target_camera.global_transform, zoom_duration)
-		zoom_tween.finished.connect(Callable(self, "_on_zoom_arrived").bind(target_camera.global_transform), Object.CONNECT_ONE_SHOT)
+		zoom_tween.tween_property(building_camera, "global_transform", zoom_target_transform, zoom_duration)
+		zoom_tween.finished.connect(Callable(self, "_on_zoom_arrived").bind(zoom_target_transform), Object.CONNECT_ONE_SHOT)
 		return
 
 	# Fallback: computed zoom towards window.
@@ -446,11 +448,29 @@ func _ease_to_window_camera(window: Area3D) -> void:
 	var target_pos := window_pos + dir * zoom_distance
 	var target_transform := building_camera.global_transform.looking_at(window_pos, Vector3.UP)
 	target_transform.origin = target_pos
+	zoom_target_transform = target_transform
+	has_zoom_target = true
 
 	zoom_tween = get_tree().create_tween()
 	zoom_in_progress = true
-	zoom_tween.tween_property(building_camera, "global_transform", target_transform, zoom_duration)
-	zoom_tween.finished.connect(Callable(self, "_on_zoom_arrived").bind(target_transform), Object.CONNECT_ONE_SHOT)
+	zoom_tween.tween_property(building_camera, "global_transform", zoom_target_transform, zoom_duration)
+	zoom_tween.finished.connect(Callable(self, "_on_zoom_arrived").bind(zoom_target_transform), Object.CONNECT_ONE_SHOT)
+
+func _debug_finish_zoom_now() -> void:
+	if building_camera == null:
+		return
+	if not zoom_in_progress:
+		return
+	if not has_zoom_target:
+		return
+	if zoom_tween:
+		zoom_tween.kill()
+		zoom_tween = null
+	building_camera.global_transform = zoom_target_transform
+	_on_zoom_arrived(zoom_target_transform)
+	_on_camera_arrived(story_window_id)
+	# Prevent accidental reuse (e.g. during return tween).
+	has_zoom_target = false
 
 func _on_zoom_arrived(target_t: Transform3D) -> void:
 	zoom_in_progress = false
@@ -460,7 +480,21 @@ func _on_zoom_arrived(target_t: Transform3D) -> void:
 	if storyscreen_pixel_tween:
 		storyscreen_pixel_tween.kill()
 		storyscreen_pixel_tween = null
-	_set_storyscreen_pixel_size(story_window_node, storyscreen_pixel_size_in_focus)
+	if is_instance_valid(story_window_node):
+		_set_storyscreen_pixel_size(story_window_node, storyscreen_pixel_size_in_focus)
+
+func _reset_story_state() -> void:
+	story_window_id = ""
+	story_window_node = null
+	story_choice = ""
+	story_gained_fragment = false
+	story_data = {}
+	if storyscreen_pixel_tween:
+		storyscreen_pixel_tween.kill()
+		storyscreen_pixel_tween = null
+
+	if dialogue_manager and dialogue_manager.has_method("close_choice"):
+		dialogue_manager.close_choice()
 
 func _get_story_screen(window: Area3D) -> MeshInstance3D:
 	if window == null:
@@ -525,7 +559,7 @@ func _start_storyscreen_pixel_pulse(window: Area3D, duration: float) -> void:
 		.set_ease(Tween.EASE_OUT)
 
 func _start_storyscreen_pixel_return(window: Area3D, duration: float) -> void:
-	# Return tween: chunky -> crisp across the camera return.
+	# Return tween: crisp -> chunky while camera pulls back.
 	if storyscreen_pixel_tween:
 		storyscreen_pixel_tween.kill()
 		storyscreen_pixel_tween = null
@@ -541,12 +575,12 @@ func _start_storyscreen_pixel_return(window: Area3D, duration: float) -> void:
 	var focus_px := maxf(storyscreen_pixel_size_in_focus, 1.0)
 	var start_px := maxf(storyscreen_pixel_size_during_camera_move, 1.0)
 
-	mat.set_shader_parameter("pixel_size", start_px)
+	mat.set_shader_parameter("pixel_size", focus_px)
 
 	storyscreen_pixel_tween = get_tree().create_tween()
-	storyscreen_pixel_tween.tween_property(mat, "shader_parameter/pixel_size", focus_px, d)\
+	storyscreen_pixel_tween.tween_property(mat, "shader_parameter/pixel_size", start_px, d)\
 		.set_trans(Tween.TRANS_SINE)\
-		.set_ease(Tween.EASE_OUT)
+		.set_ease(Tween.EASE_IN)
 
 func _apply_story_texture(window: Area3D, tex: Texture2D) -> void:
 	var screen := _get_story_screen(window)
@@ -571,6 +605,10 @@ func _process(delta: float) -> void:
 	if get_viewport().get_camera_3d() != building_camera:
 		return
 	if not in_area:
+		return
+	# DEBUG: only skip the *zoom-in* (not the return to selection).
+	if OS.is_debug_build() and debug_skip_zoom_on_interact and zoom_in_progress and window_focus_active and story_window_id != "" and Input.is_action_just_pressed("interact"):
+		_debug_finish_zoom_now()
 		return
 	if focus_in_progress or zoom_in_progress:
 		return
@@ -694,18 +732,7 @@ func _on_window_choice_made(choice: String) -> void:
 	dialogue_manager.show_dialogue(outcome_lines, "window_outcome:" + story_window_id, true)
 
 func _cancel_window_story() -> void:
-	story_window_id = ""
-	story_window_node = null
-	story_choice = ""
-	story_gained_fragment = false
-	story_data = {}
-	if storyscreen_pixel_tween:
-		storyscreen_pixel_tween.kill()
-		storyscreen_pixel_tween = null
-
-	if dialogue_manager and dialogue_manager.has_method("close_choice"):
-		dialogue_manager.close_choice()
-
+	_reset_story_state()
 	_update_stop_watching_visibility()
 	_return_to_selection()
 
@@ -720,22 +747,22 @@ func _resolve_window_and_return() -> void:
 	# Remember which window was just seen so we can swap its StoryScreen on return.
 	last_seen_window_node = story_window_node
 
-	story_window_id = ""
-	story_window_node = null
-	story_choice = ""
-	story_gained_fragment = false
-	story_data = {}
-	if storyscreen_pixel_tween:
-		storyscreen_pixel_tween.kill()
-		storyscreen_pixel_tween = null
+	_reset_story_state()
 
 	_update_stop_watching_visibility()
 	_return_to_selection()
 
 func _on_stop_watching_pressed() -> void:
 	if ending_ui:
+		_reset_story_state()
+		selection_active = false
+		window_focus_active = false
 		window_selector.set_enabled(false)
 		_hide_hover_text()
+		_set_pixelize_override(false)
+		character.set_controls_enabled(false, true)
+		if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
+			dialogue_manager.set_external_controls_lock(false)
 		if dialogue_manager and dialogue_manager.has_method("set_stop_watching_visible"):
 			dialogue_manager.set_stop_watching_visible(false)
 		ending_ui.open()
@@ -770,6 +797,8 @@ func _return_to_selection() -> void:
 	selection_active = false
 	window_selector.set_enabled(false)
 	_hide_hover_text()
+	# Avoid debug "skip zoom" from interfering with the return tween.
+	has_zoom_target = false
 
 	# While the camera moves back out, keep other windows showing base/seen
 	# (so they don't flash gray).
@@ -804,6 +833,9 @@ func _on_return_arrived() -> void:
 
 	# Once we're back in selection, swap the last seen window's StoryScreen image.
 	if last_seen_window_node != null and window_seen_texture != null:
+		if storyscreen_pixel_tween:
+			storyscreen_pixel_tween.kill()
+			storyscreen_pixel_tween = null
 		_apply_story_texture(last_seen_window_node, window_seen_texture)
 		_set_storyscreen_pixel_size(last_seen_window_node, storyscreen_pixel_size_in_focus)
 		last_seen_window_node = null
@@ -833,8 +865,3 @@ func _show_story_screen(window: Area3D) -> void:
 		screen.visible = true
 		_apply_story_texture(window, window_cover_texture)
 
-func _hide_all_story_screens() -> void:
-	for node in get_tree().get_nodes_in_group("selectable_window"):
-		var screen := node.get_node_or_null("StoryScreen") as MeshInstance3D
-		if screen:
-			screen.visible = false

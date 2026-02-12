@@ -22,6 +22,7 @@ var current_line_full := ""
 var sound_timer := 0.0
 var hover_active := false
 var external_controls_lock := false
+var warned_missing_character := false
 
 @onready var character := get_node_or_null(character_path)
 @onready var panel: Panel = $Root/Panel
@@ -30,6 +31,7 @@ var external_controls_lock := false
 @onready var interact_hint: Label = $Root/InteractHint
 @onready var type_sound: AudioStreamPlayer = $Root/TypeSound
 @onready var stop_watching_button: Button = $Root/StopWatchingButton
+@onready var stop_watching_label: Label = $Root/StopWatchingButton/StopLabel
 @onready var choice_overlay: Control = $Root/ChoiceOverlay
 @onready var choice_left_button: Button = $Root/ChoiceOverlay/LeftButton
 @onready var choice_right_button: Button = $Root/ChoiceOverlay/RightButton
@@ -46,6 +48,19 @@ var choice_left_float_tween: Tween
 var choice_right_float_tween: Tween
 var choice_left_style_tween: Tween
 var choice_right_style_tween: Tween
+var choice_wave_time_a := 0.0
+var choice_wave_time_b := 0.0
+
+# Stop Watching overlay hover animation (matches choice labels)
+var stop_hovered := false
+var stop_base_pos: Vector2
+var stop_base_scale: Vector2 = Vector2.ONE
+var stop_style_tween: Tween
+var stop_wave_time := 0.0
+@export var stop_wave_speed: float = 3.2 # radians/sec-ish feel (higher = faster)
+@export var stop_wave_rotation_amp: float = 0.07 # radians
+@export var stop_wave_float_amp: float = 7.0 # px
+@export var stop_wave_lift: float = 18.0 # px baseline lift while hovered
 
 func _ready() -> void:
 	panel.visible = false
@@ -65,6 +80,9 @@ func _ready() -> void:
 	if stop_watching_button:
 		stop_watching_button.visible = false
 		stop_watching_button.pressed.connect(_on_stop_watching_pressed)
+		stop_watching_button.mouse_entered.connect(_on_stop_button_mouse_entered)
+		stop_watching_button.mouse_exited.connect(_on_stop_button_mouse_exited)
+		call_deferred("_cache_stop_base")
 	if choice_overlay:
 		choice_overlay.visible = false
 	if choice_left_button:
@@ -83,6 +101,14 @@ func _ready() -> void:
 		var blocks := _split_into_blocks(intro)
 		if blocks.size() > 0:
 			show_dialogue(blocks, "intro", true)
+
+func _cache_stop_base() -> void:
+	# Runs deferred so UI layout has computed sizes/positions.
+	if stop_watching_label == null:
+		return
+	stop_base_pos = stop_watching_label.position
+	stop_base_scale = stop_watching_label.scale
+	stop_watching_label.pivot_offset = stop_watching_label.size * 0.5
 
 func is_active() -> bool:
 	return active
@@ -126,8 +152,8 @@ func show_dialogue(lines: Array[String], dialogue_id: String = "", lock_controls
 	prompt_label.visible = true
 	_start_typing_line(current_lines[current_index])
 	prompt_label.text = prompt_text
-	if lock_controls and character:
-		character.set_controls_enabled(false)
+	if lock_controls:
+		_set_character_controls(false)
 
 func queue_dialogue(lines: Array[String], dialogue_id: String = "") -> void:
 	if lines.is_empty():
@@ -155,6 +181,37 @@ func _input(event: InputEvent) -> void:
 			_select_choice("B")
 
 func _process(delta: float) -> void:
+	# Stop Watching hover wave (runs even when dialogue isn't typing).
+	if stop_hovered and stop_watching_button != null and stop_watching_button.visible and stop_watching_label != null:
+		stop_wave_time += delta
+		var rot := sin(stop_wave_time * stop_wave_speed) * stop_wave_rotation_amp
+		var float_y := sin(stop_wave_time * stop_wave_speed * 0.9 + 0.7) * stop_wave_float_amp
+		stop_watching_label.rotation = rot
+		stop_watching_label.position = stop_base_pos + Vector2(0, -stop_wave_lift + float_y)
+
+	# Choice hover wave (exact same feel as Stop Watching).
+	if is_choice_open():
+		if choice_hovered == "A" and choice_left_label != null:
+			choice_wave_time_a += delta
+			# Left choice starts tilting left first.
+			var rot_a := -sin(choice_wave_time_a * stop_wave_speed) * stop_wave_rotation_amp
+			var float_a := sin(choice_wave_time_a * stop_wave_speed * 0.9 + 0.7) * stop_wave_float_amp
+			choice_left_label.rotation = rot_a
+			choice_left_label.position = choice_left_base_pos + Vector2(0, -stop_wave_lift + float_a)
+		elif choice_left_label != null:
+			choice_left_label.rotation = 0.0
+			choice_left_label.position = choice_left_base_pos
+
+		if choice_hovered == "B" and choice_right_label != null:
+			choice_wave_time_b += delta
+			var rot_b := sin(choice_wave_time_b * stop_wave_speed) * stop_wave_rotation_amp
+			var float_b := sin(choice_wave_time_b * stop_wave_speed * 0.9 + 0.7) * stop_wave_float_amp
+			choice_right_label.rotation = rot_b
+			choice_right_label.position = choice_right_base_pos + Vector2(0, -stop_wave_lift + float_b)
+		elif choice_right_label != null:
+			choice_right_label.rotation = 0.0
+			choice_right_label.position = choice_right_base_pos
+
 	if not active or not typing_active:
 		return
 	typing_progress += delta * typing_chars_per_sec
@@ -184,8 +241,8 @@ func _finish_dialogue() -> void:
 	prompt_label.visible = true
 	typing_active = false
 	_stop_voiceover()
-	if character and not external_controls_lock:
-		character.set_controls_enabled(true)
+	if not external_controls_lock:
+		_set_character_controls(true)
 	dialogue_finished.emit(current_id)
 	if queued.size() > 0:
 		var next: Dictionary = queued.pop_front()
@@ -220,8 +277,50 @@ func hide_hover_line() -> void:
 	prompt_label.visible = true
 
 func set_stop_watching_visible(show: bool) -> void:
-	if stop_watching_button:
-		stop_watching_button.visible = show
+	if stop_watching_button == null:
+		return
+	stop_watching_button.visible = show
+	if not show:
+		_set_stop_hover(false)
+		return
+	call_deferred("_cache_stop_base")
+	_set_stop_hover(false)
+	if stop_watching_label:
+		stop_watching_label.self_modulate = Color(1, 1, 1, 1)
+
+func _on_stop_button_mouse_entered() -> void:
+	_cache_stop_base()
+	_set_stop_hover(true)
+
+func _on_stop_button_mouse_exited() -> void:
+	_set_stop_hover(false)
+
+func _set_stop_hover(hovered_now: bool) -> void:
+	if stop_hovered == hovered_now:
+		return
+	stop_hovered = hovered_now
+	if stop_hovered:
+		stop_wave_time = 0.0
+	_apply_stop_style(hovered_now)
+
+func _apply_stop_style(hovered_now: bool) -> void:
+	if stop_watching_label == null:
+		return
+	if stop_style_tween:
+		stop_style_tween.kill()
+		stop_style_tween = null
+
+	# Style tween (scale/rotation/brighten + small lift), matching choice buttons.
+	stop_style_tween = get_tree().create_tween()
+	stop_style_tween.set_parallel(true)
+	if hovered_now:
+		stop_style_tween.tween_property(stop_watching_label, "scale", stop_base_scale * 1.25, 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		stop_style_tween.tween_property(stop_watching_label, "self_modulate", Color(1.0, 0.97, 0.88, 1.0), 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	else:
+		stop_style_tween.tween_property(stop_watching_label, "scale", stop_base_scale, 0.14).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		stop_style_tween.tween_property(stop_watching_label, "rotation", 0.0, 0.16).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		stop_style_tween.tween_property(stop_watching_label, "position", stop_base_pos, 0.16).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		stop_style_tween.tween_property(stop_watching_label, "self_modulate", Color(1, 1, 1, 1), 0.14).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 func set_external_controls_lock(locked: bool) -> void:
 	# When true, DialogueManager will NOT re-enable player controls on dialogue finish.
@@ -290,6 +389,10 @@ func _set_choice_hover(new_hover: String) -> void:
 	if choice_hovered == new_hover:
 		return
 	choice_hovered = new_hover
+	if choice_hovered == "A":
+		choice_wave_time_a = 0.0
+	elif choice_hovered == "B":
+		choice_wave_time_b = 0.0
 	_apply_choice_style("A", choice_hovered == "A")
 	_apply_choice_style("B", choice_hovered == "B")
 
@@ -300,7 +403,6 @@ func _apply_choice_style(which: String, hovered_now: bool) -> void:
 
 	var base_pos: Vector2 = choice_left_base_pos if which == "A" else choice_right_base_pos
 	var base_scale: Vector2 = choice_left_base_scale if which == "A" else choice_right_base_scale
-	var tilt: float = -0.08 if which == "A" else 0.08
 
 	var style_tween: Tween = choice_left_style_tween if which == "A" else choice_right_style_tween
 	if style_tween:
@@ -315,8 +417,6 @@ func _apply_choice_style(which: String, hovered_now: bool) -> void:
 	style_tween.set_parallel(true)
 	if hovered_now:
 		style_tween.tween_property(label, "scale", base_scale * 1.25, 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		style_tween.tween_property(label, "rotation", tilt, 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		style_tween.tween_property(label, "position", base_pos + Vector2(0, -10), 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 		style_tween.tween_property(label, "self_modulate", Color(1.0, 0.97, 0.88, 1.0), 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 	else:
 		style_tween.tween_property(label, "scale", base_scale, 0.14).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
@@ -324,19 +424,12 @@ func _apply_choice_style(which: String, hovered_now: bool) -> void:
 		style_tween.tween_property(label, "position", base_pos, 0.14).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 		style_tween.tween_property(label, "self_modulate", Color(1, 1, 1, 1), 0.14).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
-	# Gentle floating loop while hovered.
-	if hovered_now:
-		float_tween = get_tree().create_tween()
-		float_tween.set_loops()
-		float_tween.tween_property(label, "position", base_pos + Vector2(0, -12), 0.55).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-		float_tween.tween_property(label, "position", base_pos + Vector2(0, -8), 0.55).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
-
 	if which == "A":
 		choice_left_style_tween = style_tween
-		choice_left_float_tween = float_tween
+		choice_left_float_tween = null
 	else:
 		choice_right_style_tween = style_tween
-		choice_right_float_tween = float_tween
+		choice_right_float_tween = null
 
 func _on_stop_watching_pressed() -> void:
 	stop_watching_pressed.emit()
@@ -352,3 +445,11 @@ func _stop_voiceover() -> void:
 func _finish_typing_line() -> void:
 	typing_active = false
 	dialogue_label.text = current_line_full
+
+func _set_character_controls(enabled: bool) -> void:
+	if character:
+		character.set_controls_enabled(enabled)
+		return
+	if not warned_missing_character:
+		warned_missing_character = true
+		push_warning("DialogueManager: character_path is invalid; control locking is disabled.")

@@ -9,16 +9,14 @@ signal selection_cancelled
 @export var highlight_material: Material
 @export var window_collision_mask := 1 << 1
 
+const RAY_LENGTH := 200.0
+
 var enabled := false
 var current_window: Area3D
-var windows: Array[Node] = []
 var original_materials := {}
 
 @onready var camera: Camera3D = get_node(camera_path)
 @onready var storyscreen_shader: Shader = preload("res://assets/storyscreen_pixelate.gdshader")
-
-func _ready() -> void:
- windows = get_tree().get_nodes_in_group("selectable_window")
 
 func set_enabled(value: bool) -> void:
  enabled = value
@@ -42,7 +40,7 @@ func _update_hover() -> void:
  var mouse_pos := viewport.get_mouse_position()
  var ray_origin := camera.project_ray_origin(mouse_pos)
  var ray_dir := camera.project_ray_normal(mouse_pos)
- var ray_end := ray_origin + ray_dir * 200.0
+ var ray_end := ray_origin + ray_dir * RAY_LENGTH
  var query := PhysicsRayQueryParameters3D.create(ray_origin, ray_end)
  query.collide_with_areas = true
  query.collide_with_bodies = false
@@ -54,14 +52,18 @@ func _update_hover() -> void:
 
 func _set_highlight(target: Area3D) -> void:
  if current_window:
-  var prev_mesh := current_window.get_node("WindowMesh") as MeshInstance3D
-  if original_materials.has(current_window):
+  var prev_mesh := current_window.get_node_or_null("WindowMesh") as MeshInstance3D
+  if prev_mesh != null and original_materials.has(current_window):
    prev_mesh.material_override = original_materials[current_window]
   _set_storyscreen_hover(current_window, false)
   window_unhovered.emit(current_window)
  current_window = target
  if current_window and highlight_material:
-  var mesh := current_window.get_node("WindowMesh") as MeshInstance3D
+  var mesh := current_window.get_node_or_null("WindowMesh") as MeshInstance3D
+  if mesh == null:
+   _set_storyscreen_hover(current_window, true)
+   window_hovered.emit(current_window)
+   return
   if not original_materials.has(current_window):
    original_materials[current_window] = mesh.material_override
   mesh.material_override = highlight_material

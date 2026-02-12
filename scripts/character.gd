@@ -36,14 +36,14 @@ func _physics_process(delta: float) -> void:
 	target_velocity = target_velocity.normalized() * (input_dir.length() * speed)
 
 	var accel: float = acceleration if is_on_floor() else acceleration * air_control
-	var deccel: float = deceleration if is_on_floor() else deceleration * air_control
+	var decel: float = deceleration if is_on_floor() else deceleration * air_control
 
 	if input_dir.length() > 0.0:
 		velocity.x = move_toward(velocity.x, target_velocity.x, accel * delta)
 		velocity.z = move_toward(velocity.z, target_velocity.z, accel * delta)
 	else:
-		velocity.x = move_toward(velocity.x, 0.0, deccel * delta)
-		velocity.z = move_toward(velocity.z, 0.0, deccel * delta)
+		velocity.x = move_toward(velocity.x, 0.0, decel * delta)
+		velocity.z = move_toward(velocity.z, 0.0, decel * delta)
 
 	if is_on_floor():
 		velocity_y = jump_velocity if Input.is_action_just_pressed("jump") else 0.0
@@ -62,6 +62,7 @@ func _input(event: InputEvent) -> void:
 		camera.rotation.x = clamp(camera.rotation.x, -PI / 2.0, PI / 2.0)
 
 func set_controls_enabled(enabled: bool, show_cursor: bool = not enabled) -> void:
+	# `show_cursor` defaults to the inverse of enabled controls.
 	controls_enabled = enabled
 	if controls_enabled:
 		Input.mouse_mode = Input.MOUSE_MODE_CAPTURED

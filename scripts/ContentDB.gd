@@ -14,6 +14,7 @@ var balcony_enter_lines: Array[String] = []
 
 # endings.json: Array[Dictionary]
 var endings: Array[Dictionary] = []
+const MAX_FRAGMENTS_ANY := 999999
 
 func _ready() -> void:
 	_load_windows()
@@ -66,7 +67,7 @@ func find_ending(fragments: int, avoids: int) -> Dictionary:
 
 func _fragments_in_range(ending: Dictionary, fragments: int) -> bool:
 	var min_fragments := int(ending.get("min_fragments", 0))
-	var max_fragments := int(ending.get("max_fragments", 999999))
+	var max_fragments := int(ending.get("max_fragments", MAX_FRAGMENTS_ANY))
 	return fragments >= min_fragments and fragments <= max_fragments
 
 func _load_windows() -> void:

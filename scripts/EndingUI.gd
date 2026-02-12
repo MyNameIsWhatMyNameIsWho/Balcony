@@ -17,8 +17,11 @@ func open() -> void:
 	_clear_lines()
 	var ending: Dictionary = GameState.resolve_ending()
 	var lines: Array = ending.get("lines", [])
-	for line in lines:
-		_add_line(str(line))
+	if ending.is_empty() or lines.is_empty():
+		_add_line("Your story ended, but no ending text was configured for this path.")
+	else:
+		for line in lines:
+			_add_line(str(line))
 	panel.visible = true
 
 func _clear_lines() -> void:
