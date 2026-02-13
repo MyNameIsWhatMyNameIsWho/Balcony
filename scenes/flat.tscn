@@ -1,4 +1,4 @@
-[gd_scene load_steps=82 format=3 uid="uid://xh154ie053j1"]
+[gd_scene load_steps=83 format=3 uid="uid://xh154ie053j1"]
 
 [ext_resource type="PackedScene" uid="uid://dkhawoo8pj11p" path="res://scenes/character.tscn" id="1_4y78d"]
 [ext_resource type="Material" uid="uid://dk4csq0og1l3w" path="res://assets/new_standard_material_3d.tres" id="2_u0wvv"]
@@ -27,6 +27,7 @@
 [ext_resource type="Script" path="res://scripts/interactable_dialogue.gd" id="17_interactable_dialogue"]
 [ext_resource type="Script" path="res://scripts/DebugFragments.gd" id="18_debug_fragments"]
 [ext_resource type="PackedScene" uid="uid://d3m72xg3yx1j1" path="res://scenes/EndingUI.tscn" id="21_ending_ui"]
+[ext_resource type="PackedScene" uid="uid://cxmwg8jqyosr8" path="res://scenes/PauseMenu.tscn" id="22_pause_menu"]
 [ext_resource type="Texture2D" uid="uid://050rubp4ec8c" path="res://assets/textures/Building_1_baseColor.jpeg" id="25_sedw5"]
 [ext_resource type="Texture2D" uid="uid://8kht62daxoif" path="res://assets/textures/Building_1_metallicRoughness.png" id="26_vgibu"]
 [ext_resource type="Texture2D" uid="uid://cmkois4i88d3r" path="res://assets/textures/Building_1_normal.png" id="27_h8ih5"]
@@ -467,6 +468,8 @@ stream = SubResource("AudioStreamOggVorbis_fu5xk")
 volume_db = -25.942
 
 [node name="EndingUI" parent="." instance=ExtResource("21_ending_ui")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("22_pause_menu")]
 
 [node name="DebugUI" type="CanvasLayer" parent="."]
 layer = 4

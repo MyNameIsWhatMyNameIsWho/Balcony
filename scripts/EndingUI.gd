@@ -36,9 +36,15 @@ func _add_line(text: String) -> void:
 
 func _on_restart_pressed() -> void:
 	GameState.reset_run()
-	get_tree().change_scene_to_file(start_scene_path)
+	if SceneLoader != null:
+		SceneLoader.change_scene(start_scene_path)
+	else:
+		get_tree().change_scene_to_file(start_scene_path)
 
 func _on_quit_pressed() -> void:
 	# Ensure a fresh run when returning to menu.
 	GameState.reset_run()
-	get_tree().change_scene_to_file(menu_scene_path)
+	if SceneLoader != null:
+		SceneLoader.change_scene(menu_scene_path)
+	else:
+		get_tree().change_scene_to_file(menu_scene_path)

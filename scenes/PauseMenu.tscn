@@ -1,0 +1,73 @@
+[gd_scene load_steps=2 format=3 uid="uid://cxmwg8jqyosr8"]
+
+[ext_resource type="Script" path="res://scripts/pause_menu.gd" id="1_pause_menu"]
+
+[node name="PauseMenu" type="CanvasLayer"]
+layer = 20
+script = ExtResource("1_pause_menu")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Dim" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0, 0, 0, 0.55)
+
+[node name="Panel" type="Panel" parent="Root"]
+layout_mode = 0
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -360.0
+offset_top = -260.0
+offset_right = 360.0
+offset_bottom = 260.0
+mouse_filter = 1
+
+[node name="VBox" type="VBoxContainer" parent="Root/Panel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 44.0
+offset_top = 44.0
+offset_right = -44.0
+offset_bottom = -44.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 18
+alignment = 1
+
+[node name="TitleLabel" type="Label" parent="Root/Panel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 56
+text = "Paused"
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Root/Panel/VBox"]
+custom_minimum_size = Vector2(0, 28)
+layout_mode = 2
+
+[node name="ResumeButton" type="Button" parent="Root/Panel/VBox"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "Return"
+
+[node name="QuitButton" type="Button" parent="Root/Panel/VBox"]
+custom_minimum_size = Vector2(0, 64)
+layout_mode = 2
+theme_override_font_sizes/font_size = 34
+text = "Quit"

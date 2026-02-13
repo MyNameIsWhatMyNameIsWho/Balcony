@@ -19,6 +19,7 @@ config/icon="res://icon.svg"
 
 ContentDB="*res://scripts/ContentDB.gd"
 GameState="*res://scripts/GameState.gd"
+SceneLoader="*res://scripts/scene_loader.gd"
 
 [display]
 
