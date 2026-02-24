@@ -9,6 +9,7 @@
 [ext_resource type="AudioStream" uid="uid://bx0vj3ihc4vjx" path="res://assets/kenney_rpg-audio/Audio/footstep01.ogg" id="6_kqj1e"]
 [ext_resource type="AudioStream" uid="uid://13uhgbidj0sb" path="res://assets/kenney_rpg-audio/Audio/footstep02.ogg" id="7_0k5vv"]
 [ext_resource type="AudioStream" uid="uid://e1d7dig1i4mx" path="res://assets/kenney_rpg-audio/Audio/amber2023-inhale-exhale-230173.mp3" id="8_g5o28"]
+
 [sub_resource type="Resource" id="CutsceneCue_1"]
 script = ExtResource("2_cue")
 time = 0.0
