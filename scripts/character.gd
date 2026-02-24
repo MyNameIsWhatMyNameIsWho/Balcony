@@ -19,7 +19,8 @@ var breathe_time: float = 0.0
 
 func _ready() -> void:
 	camera_base_position = camera.position
-	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
+	# Don’t force mouse capture here; let `set_controls_enabled()` decide.
+	set_controls_enabled(controls_enabled)
 
 func _physics_process(delta: float) -> void:
 	_apply_breathing(delta)

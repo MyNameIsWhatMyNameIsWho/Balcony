@@ -1,4 +1,4 @@
-[gd_scene load_steps=83 format=3 uid="uid://xh154ie053j1"]
+[gd_scene load_steps=84 format=3 uid="uid://xh154ie053j1"]
 
 [ext_resource type="PackedScene" uid="uid://dkhawoo8pj11p" path="res://scenes/character.tscn" id="1_4y78d"]
 [ext_resource type="Material" uid="uid://dk4csq0og1l3w" path="res://assets/new_standard_material_3d.tres" id="2_u0wvv"]
@@ -10,12 +10,12 @@
 [ext_resource type="ArrayMesh" uid="uid://idhcw35kt1ky" path="res://assets/OBJ/Couch_Medium2.obj" id="6_pimkc"]
 [ext_resource type="Script" path="res://scripts/WindowData.gd" id="6_window_data"]
 [ext_resource type="Texture2D" uid="uid://bu1x2b5fa168q" path="res://assets/window_covers/window_cover.png" id="7_jcmmq"]
-[ext_resource type="Texture2D" uid="uid://1605aejy2q7d" path="res://assets/window_covers/base_window_coveer.png" id="7_m3sv8"]
 [ext_resource type="ArrayMesh" uid="uid://clht7tc120gs3" path="res://assets/OBJ/Kitchen_1Drawers.obj" id="7_qu5lk"]
 [ext_resource type="Texture2D" uid="uid://c3my26d5cbanl" path="res://assets/textures/Buidling_4_baseColor.jpeg" id="8_c6c0t"]
 [ext_resource type="ArrayMesh" uid="uid://bcwwtbxw8vlap" path="res://assets/OBJ/Kitchen_2Drawers.obj" id="8_wxaa3"]
 [ext_resource type="ArrayMesh" uid="uid://cjx6bu7ywqshf" path="res://assets/OBJ/Kitchen_3Drawers.obj" id="9_7i7dl"]
 [ext_resource type="Texture2D" uid="uid://b8d2eg1wc8y7p" path="res://assets/window_covers/seen_window.png" id="9_mapy8"]
+[ext_resource type="Texture2D" uid="uid://b58h5lnkl564k" path="res://assets/window_covers/arguement_cover.png" id="9_nqasr"]
 [ext_resource type="Texture2D" uid="uid://rw7buxl6giuf" path="res://assets/textures/Buidling_4_metallicRoughness.png" id="9_pdsn3"]
 [ext_resource type="ArrayMesh" uid="uid://ipb3c87xmbou" path="res://assets/OBJ/Kitchen_Cabinet1.obj" id="10_t7tpx"]
 [ext_resource type="Texture2D" uid="uid://dhxf3itl57xd6" path="res://assets/textures/Buidling_4_normal.png" id="10_wii4h"]
@@ -28,6 +28,7 @@
 [ext_resource type="Script" path="res://scripts/DebugFragments.gd" id="18_debug_fragments"]
 [ext_resource type="PackedScene" uid="uid://d3m72xg3yx1j1" path="res://scenes/EndingUI.tscn" id="21_ending_ui"]
 [ext_resource type="PackedScene" uid="uid://cxmwg8jqyosr8" path="res://scenes/PauseMenu.tscn" id="22_pause_menu"]
+[ext_resource type="PackedScene" uid="uid://bq77emhwrg7m0" path="res://scenes/ui/IntroCinematic.tscn" id="23_intro_cinematic"]
 [ext_resource type="Texture2D" uid="uid://050rubp4ec8c" path="res://assets/textures/Building_1_baseColor.jpeg" id="25_sedw5"]
 [ext_resource type="Texture2D" uid="uid://8kht62daxoif" path="res://assets/textures/Building_1_metallicRoughness.png" id="26_vgibu"]
 [ext_resource type="Texture2D" uid="uid://cmkois4i88d3r" path="res://assets/textures/Building_1_normal.png" id="27_h8ih5"]
@@ -337,6 +338,7 @@ shadow_mesh = SubResource("ArrayMesh_swovo")
 [node name="DialogueUI" type="CanvasLayer" parent="."]
 script = ExtResource("16_dialogue_manager")
 character_path = NodePath("../Character")
+autoplay_intro = false
 
 [node name="Root" type="Control" parent="DialogueUI"]
 layout_mode = 3
@@ -470,6 +472,9 @@ volume_db = -25.942
 [node name="EndingUI" parent="." instance=ExtResource("21_ending_ui")]
 
 [node name="PauseMenu" parent="." instance=ExtResource("22_pause_menu")]
+
+[node name="IntroCinematic" parent="." instance=ExtResource("23_intro_cinematic")]
+character_path = NodePath("../Character")
 
 [node name="DebugUI" type="CanvasLayer" parent="."]
 layer = 4
@@ -614,7 +619,7 @@ selection_pan_max = Vector2(0.4, 2)
 selection_pan_smoothing_y = 1.0
 selection_pan_y_reach = 0.1
 pixel_size_in_selection = 8.0
-window_base_texture = ExtResource("7_m3sv8")
+window_base_texture = ExtResource("9_nqasr")
 window_cover_texture = ExtResource("7_jcmmq")
 window_seen_texture = ExtResource("9_mapy8")
 

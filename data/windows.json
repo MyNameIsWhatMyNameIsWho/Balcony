@@ -1,122 +1,282 @@
 [
   {
-    "window_id": "empty_01",
-    "hover_line": "A bare room. Light on. Nothing moving.",
-    "vignette_text": "Just a room.\nTable, chair, laptop.\nYesterday someone paced here, talking too loud on the phone.\nToday it’s resting.\nGuess even empty rooms get days off.",
-    "choice_a_text": "Wait a moment",
-    "choice_b_text": "Check another window",
-    "outcome_a_text": "I give it a second.\nStill empty.\nFair enough.",
-    "outcome_b_text": "Nothing’s happening here.\nCan’t blame the room.\nOnward.",
-    "reflection_a_text": "The light doesn’t change.\nNothing to catch, nothing to miss.\nJust a room being a room.",
-    "reflection_b_text": "I’m not here to admire furniture.\nThere are better windows than this.\nAt least there used to be.",
-    "memory_fragment_text": "",
-    "fragment_on_a": false,
-    "fragment_on_b": false,
-    "post_hover_line": "Still empty. The light hasn’t moved."
+	"window_id": "empty_01",
+	"cover_image": "res://assets/window_covers/window_cover.png",
+	"hover_line": "A bare room. Light on. Nothing moving.",
+	"vignette_text": "Just a room.\nTable, chair, laptop.\nYesterday someone paced here, talking too loud on the phone.\nToday it’s resting.\nGuess even empty rooms get days off.",
+	"choice_a_text": "Wait a moment",
+	"choice_b_text": "Check another window",
+	"outcome_a_text": {
+	  "numb": "I count to three.\nNothing changes.\nGood.",
+	  "grounded": "I wait a moment.\nStill empty.\nFair enough.",
+	  "raw": "I wait anyway.\nLike patience will fix me.\nIt won’t."
+	},
+	"outcome_b_text": {
+	  "numb": "Nothing here.\nMove on.",
+	  "grounded": "Nothing’s happening here.\nCan’t blame the room.\nOnward.",
+	  "raw": "I’m already leaving.\nI don’t even give it a chance.\nOf course I don’t."
+	},
+	"reflection_a_text": {
+	  "numb": "It’s just a room.\nNothing to catch, nothing to miss.",
+	  "grounded": "The light doesn’t change.\nNothing to catch, nothing to miss.\nJust a room being a room.",
+	  "raw": "Empty is easy.\nEmpty can’t reject me.\nThat’s why I’m staring."
+	},
+	"reflection_b_text": {
+	  "numb": "No signal.\nNext.",
+	  "grounded": "I’m not here to admire furniture.\nThere are better windows than this.\nAt least there used to be.",
+	  "raw": "I say I’m picky.\nReally I’m afraid.\nSo I keep moving."
+	},
+	"memory_fragment_text": "",
+	"fragment_on_a": false,
+	"fragment_on_b": false,
+	"post_hover_line": "Still empty. The light hasn’t moved."
   },
   {
-    "window_id": "tv_01",
-    "hover_line": "Blue light flickers behind half-drawn curtains.",
-    "vignette_text": "A TV’s on somewhere inside.\nLaugh track, canned and late.\nSomeone’s eating straight from the pan.\nI can’t see them, but I know the rhythm.\nEvenings sound the same when you stop listening.",
-    "choice_a_text": "Stay with it",
-    "choice_b_text": "Think of something else",
-    "outcome_a_text": "I let it play out.\nSame timing, same voices.\nSome things don’t surprise me anymore.",
-    "outcome_b_text": "I stop listening halfway through.\nI get the idea.\nThat’s usually enough.",
-    "reflection_a_text": "",
-    "reflection_b_text": "The laughter leaks out anyway.\nSame timing, different room.\nIt’s just something to fill air.",
-    "memory_fragment_text": "Dinners were quiet after the shouting stopped.\nThe TV filled the space better than we could.\nNobody asked questions when something else was talking.",
-    "fragment_on_a": true,
-    "fragment_on_b": false,
-    "post_hover_line": "The TV’s still on. Someone changed the channel."
+	"window_id": "tv_01",
+	"cover_image": "res://assets/window_covers/window_cover.png",
+	"hover_line": "Blue light flickers behind half-drawn curtains.",
+	"vignette_text": "A TV’s on somewhere inside.\nLaugh track, canned and late.\nSomeone’s eating straight from the pan.\nI can’t see them, but I know the rhythm.\nEvenings sound the same when you stop listening.",
+	"choice_a_text": "Stay with it",
+	"choice_b_text": "Think of something else",
+	"outcome_a_text": {
+	  "numb": "Same track.\nSame laughs.\nI let it run.",
+	  "grounded": "I let it play out.\nSame timing, same voices.\nSome things don’t surprise me anymore.",
+	  "raw": "I keep listening.\nLike I’m waiting for it to turn into my life.\nIt won’t."
+	},
+	"outcome_b_text": {
+	  "numb": "Noise is noise.\nI shut it off in my head.",
+	  "grounded": "I stop listening halfway through.\nI get the idea.\nThat’s usually enough.",
+	  "raw": "I flinch away.\nI don’t want warmth that isn’t mine.\nSo I pretend it’s pointless."
+	},
+	"reflection_a_text": {
+	  "numb": "Background sound.\nThat’s all it is.",
+	  "grounded": "Evenings sound the same when you stop listening.\nA screen talking for people who won’t.",
+	  "raw": "I used to need this.\nA voice that filled the room.\nSo nobody had to."
+	},
+	"reflection_b_text": {
+	  "numb": "It keeps going.\nI don’t.",
+	  "grounded": "The laughter leaks out anyway.\nSame timing, different room.\nIt’s just something to fill air.",
+	  "raw": "I call it filler.\nBut it’s what I used to hide behind.\nStill is."
+	},
+	"memory_fragment_text": {
+	  "numb": "A table. Plates. Silence.\nSomething talking in the background.",
+	  "grounded": "Dinners were quiet after the shouting stopped.\nThe TV filled the space better than we could.\nNobody asked questions when something else was talking.",
+	  "raw": "We ate with the TV on because we couldn’t stand each other’s voices.\nI learned to let screens speak for us."
+	},
+	"fragment_on_a": true,
+	"fragment_on_b": false,
+	"post_hover_line": "The TV’s still on. Someone changed the channel."
   },
   {
-    "window_id": "child_01",
-    "hover_line": "A child leans over the sill, someone older nearby.",
-    "vignette_text": "The kid’s asking questions.\nToo many, too fast.An older voice answers without hurrying.\nNo shouting, no edge to it.\nJust time being spent.",
-    "choice_a_text": "Listen a bit",
-    "choice_b_text": "Leave them to it",
-    "outcome_a_text": "I stay longer than planned.\nDoesn’t feel intrusive.\nJust quiet.",
-    "outcome_b_text": "That’s their evening.\nNo need to hover.\nThey’re doing fine.",
-    "reflection_a_text": "",
-    "reflection_b_text": "It’s strange how calm it sounds.\nLike nothing is about to break.\nI forget people can have that.",
-    "memory_fragment_text": "Someone used to answer me like that.\nSlow, patient, never annoyed.\nI don’t remember their face clearly.\nJust how safe it felt to ask.",
-    "fragment_on_a": true,
-    "fragment_on_b": false,
-    "post_hover_line": "The window’s still open. The voices moved away."
+	"window_id": "child_01",
+	"cover_image": "res://assets/window_covers/base_window_coveer.png",
+	"hover_line": "A child leans over the sill, someone older nearby.",
+	"vignette_text": "The kid’s asking questions.\nToo many, too fast. An older voice answers without hurrying.\nNo shouting, no edge to it.\nJust time being spent.",
+	"choice_a_text": "Listen a bit",
+	"choice_b_text": "Leave them to it",
+	"outcome_a_text": {
+	  "numb": "I listen.\nIt’s harmless.\nI move on.",
+	  "grounded": "I stay longer than planned.\nDoesn’t feel intrusive.\nJust quiet.",
+	  "raw": "I stay.\nBecause I want that tone aimed at me.\nIt hurts that it isn’t."
+	},
+	"outcome_b_text": {
+	  "numb": "Not my problem.\nNot my life.",
+	  "grounded": "That’s their evening.\nNo need to hover.\nThey’re doing fine.",
+	  "raw": "I leave fast.\nIf I listen too long, I start wanting.\nAnd wanting makes me stupid."
+	},
+	"reflection_a_text": {
+	  "numb": "Normal people.\nNormal voices.",
+	  "grounded": "It’s calm.\nQuestions answered without teeth.\nTime being spent.",
+	  "raw": "I can’t stop measuring it against my own childhood.\nThat’s the part I pretend I’m not doing."
+	},
+	"reflection_b_text": {
+	  "numb": "Nothing to take.\nNext window.",
+	  "grounded": "It’s strange how calm it sounds.\nLike nothing is about to break.\nI forget people can have that.",
+	  "raw": "I call it ‘calm’ like it’s a weather report.\nIt’s envy.\nIt’s grief."
+	},
+	"memory_fragment_text": {
+	  "numb": "A voice. Slow. Patient.\nA feeling I can’t name.",
+	  "grounded": "Someone used to answer me like that.\nSlow, patient, never annoyed.\nI don’t remember their face clearly.\nJust how safe it felt to ask.",
+	  "raw": "I remember being safe for a while.\nAnd then I remember it ending.\nThat’s what I can’t look at."
+	},
+	"fragment_on_a": true,
+	"fragment_on_b": false,
+	"post_hover_line": "The window’s still open. The voices moved away."
   },
   {
-    "window_id": "curtains_01",
-    "hover_line": "Curtains drawn tight. No light leaks through.",
-    "vignette_text": "Can’t see anything inside.\nJust fabric and a bit of movement.\nNo sound, either.\nSomeone’s home, probably.\nOr maybe not.",
-    "choice_a_text": "Fill in the gaps",
-    "choice_b_text": "Leave it blank",
-    "outcome_a_text": "My brain starts anyway.\nIt always does.\nEven without clues.",
-    "outcome_b_text": "Not everything needs a story.\nThis can stay closed.",
-    "reflection_a_text": "",
-    "reflection_b_text": "It’s quieter when I don’t guess.\nNo versions, no endings.\nJust a window I don’t know.",
-    "memory_fragment_text": "I used to imagine what was happening in other rooms.\nIt felt safer than checking.\nSometimes I was right.\nThat never made it better.",
-    "fragment_on_a": true,
-    "fragment_on_b": false,
-    "post_hover_line": "The curtains don’t move. Still nothing to see."
+	"window_id": "curtains_01",
+	"cover_image": "res://assets/window_covers/base_window_coveer.png",
+	"hover_line": "Curtains drawn tight. No light leaks through.",
+	"vignette_text": "Can’t see anything inside.\nJust fabric and a bit of movement.\nNo sound, either.\nSomeone’s home, probably.\nOr maybe not.",
+	"choice_a_text": "Fill in the gaps",
+	"choice_b_text": "Leave it blank",
+	"outcome_a_text": {
+	  "numb": "I invent something.\nIt passes the time.",
+	  "grounded": "My brain starts anyway.\nIt always does.\nEven without clues.",
+	  "raw": "I fill it in.\nBecause emptiness feels like threat.\nBecause I’m trained for it."
+	},
+	"outcome_b_text": {
+	  "numb": "No data.\nNo story.",
+	  "grounded": "Not everything needs a story.\nThis can stay closed.",
+	  "raw": "I try to leave it blank.\nBut my mind doesn’t obey.\nIt never has."
+	},
+	"reflection_a_text": {
+	  "numb": "Guessing is easy.\nReality is work.",
+	  "grounded": "I can’t see inside, so I narrate it anyway.\nA habit with sharp edges.",
+	  "raw": "I make up danger even when nothing is happening.\nThat’s not imagination.\nThat’s damage."
+	},
+	"reflection_b_text": {
+	  "numb": "Blank window.\nGood.",
+	  "grounded": "It’s quieter when I don’t guess.\nNo versions, no endings.\nJust a window I don’t know.",
+	  "raw": "Quiet is relief.\nRelief feels suspicious.\nSo I keep scanning."
+	},
+	"memory_fragment_text": {
+	  "numb": "Closed doors.\nMy mind doing laps.",
+	  "grounded": "I used to imagine what was happening in other rooms.\nIt felt safer than checking.\nSometimes I was right.\nThat never made it better.",
+	  "raw": "I rehearsed bad outcomes because being surprised was worse.\nI called it ‘preparing.’\nIt was fear."
+	},
+	"fragment_on_a": true,
+	"fragment_on_b": false,
+	"post_hover_line": "The curtains don’t move. Still nothing to see."
   },
   {
-    "window_id": "couple_01",
-    "hover_line": "Two figures move around the same small kitchen.",
-    "vignette_text": "They’re cooking together.\nNot talking much.\nSomeone reaches for the same drawer twice.\nAn apology, automatic.\nThey keep going.",
-    "choice_a_text": "Watch the details",
-    "choice_b_text": "Let it blur",
-    "outcome_a_text": "This feels familiar enough.\nNo sparks, no disasters.\nJust effort.",
-    "outcome_b_text": "Looks stable from here.\nThat’s usually enough.",
-    "reflection_a_text": "",
-    "reflection_b_text": "It’s quiet without being tense.\nEveryone knows their role.\nNothing spills over.",
-    "memory_fragment_text": "I was in something like this once.\nNot unhappy, just careful.\nI didn’t give more than I had.\nNo one asked me to stay.",
-    "fragment_on_a": true,
-    "fragment_on_b": false,
-    "post_hover_line": "The light’s still on. They’re eating now."
+	"window_id": "couple_01",
+	"cover_image": "res://assets/window_covers/window_cover.png",
+	"hover_line": "Two figures move around the same small kitchen.",
+	"vignette_text": "They’re cooking together.\nNot talking much.\nSomeone reaches for the same drawer twice.\nAn apology, automatic.\nThey keep going.",
+	"choice_a_text": "Watch the details",
+	"choice_b_text": "Let it blur",
+	"outcome_a_text": {
+	  "numb": "Routine.\nTwo people moving around it.\nNothing more.",
+	  "grounded": "This feels familiar enough.\nNo sparks, no disasters.\nJust effort.",
+	  "raw": "I watch too closely.\nLike I’m hunting for the crack.\nLike I need proof it can fail."
+	},
+	"outcome_b_text": {
+	  "numb": "Stable.\nBoring.\nDone.",
+	  "grounded": "Looks stable from here.\nThat’s usually enough.",
+	  "raw": "I blur it on purpose.\nIf I see it clearly, I start wishing.\nI don’t want to wish."
+	},
+	"reflection_a_text": {
+	  "numb": "Two bodies.\nOne kitchen.\nThat’s it.",
+	  "grounded": "Small habits.\nAutomatic apologies.\nA quiet that isn’t sharp.",
+	  "raw": "I keep checking whether they’re safe.\nThat’s not care.\nThat’s history."
+	},
+	"reflection_b_text": {
+	  "numb": "No drama.\nMove on.",
+	  "grounded": "It’s quiet without being tense.\nEveryone knows their role.\nNothing spills over.",
+	  "raw": "I tell myself it’s ‘fine.’\nWhat I mean is: it isn’t mine.\nSo I shouldn’t look."
+	},
+	"memory_fragment_text": {
+	  "numb": "A kitchen.\nCareful steps.\nA feeling kept small.",
+	  "grounded": "I was in something like this once.\nNot unhappy, just careful.\nI didn’t give more than I had.\nNo one asked me to stay.",
+	  "raw": "I learned to be easy to live with.\nQuiet. Useful.\nAnd still disposable."
+	},
+	"fragment_on_a": true,
+	"fragment_on_b": false,
+	"post_hover_line": "The light’s still on. They’re eating now."
   },
   {
-    "window_id": "night_01",
-    "hover_line": "Most windows are dark now.",
-    "vignette_text": "Lights go out one by one.\nA few stay on, doing nothing in particular.\nTraffic thins. Voices don’t carry as far.\nThe building looks flatter without people in it.\nLike it’s done for the night.",
-    "choice_a_text": "Stay a bit",
-    "choice_b_text": "Stop watching",
-    "outcome_a_text": "Might as well enjoy the quiet.\nIt doesn’t last long.",
-    "outcome_b_text": "That’s enough for today.\nNo need to drag it out.",
-    "reflection_a_text": "Nothing else is going to happen tonight.\nThe city’s already halfway asleep.\nI’m not missing much.",
-    "reflection_b_text": "The day doesn’t need a closing scene.\nIt can just stop here.\nThat works too.",
-    "memory_fragment_text": "",
-    "fragment_on_a": false,
-    "fragment_on_b": false,
-    "post_hover_line": "Just dark windows. The night’s settled."
+	"window_id": "night_01",
+	"cover_image": "res://assets/window_covers/base_window_coveer.png",
+	"hover_line": "Most windows are dark now.",
+	"vignette_text": "Lights go out one by one.\nA few stay on, doing nothing in particular.\nTraffic thins. Voices don’t carry as far.\nThe building looks flatter without people in it.\nLike it’s done for the night.",
+	"choice_a_text": "Stay a bit",
+	"choice_b_text": "Stop watching",
+	"outcome_a_text": {
+	  "numb": "Quiet.\nFine.\nI stay.",
+	  "grounded": "Might as well enjoy the quiet.\nIt doesn’t last long.",
+	  "raw": "I stay because leaving feels like ending.\nAnd endings scare me more than silence."
+	},
+	"outcome_b_text": {
+	  "numb": "Done.\nEnough.",
+	  "grounded": "That’s enough for today.\nNo need to drag it out.",
+	  "raw": "I cut it short.\nNot because it’s enough.\nBecause I’m shaking."
+	},
+	"reflection_a_text": {
+	  "numb": "Nothing else is going to happen.\nGood.",
+	  "grounded": "Nothing else is going to happen tonight.\nThe city’s already halfway asleep.\nI’m not missing much.",
+	  "raw": "I keep waiting for something to drop.\nEven when the night is gentle.\nEspecially then."
+	},
+	"reflection_b_text": {
+	  "numb": "No closing scene.\nJust stop.",
+	  "grounded": "The day doesn’t need a closing scene.\nIt can just stop here.\nThat works too.",
+	  "raw": "I don’t know how to stop softly.\nSo I stop abruptly.\nLike slamming a door."
+	},
+	"memory_fragment_text": "",
+	"fragment_on_a": false,
+	"fragment_on_b": false,
+	"post_hover_line": "Just dark windows. The night’s settled."
   },
   {
-    "window_id": "noticed_01",
-    "hover_line": "A light clicks on. Someone moves closer to the glass.",
-    "vignette_text": "I’m not the only one looking.\nThey stop for a second, adjusting their eyes.\nWe notice each other at about the same time.\nNo rush. No anger.\nJust an unexpected overlap.",
-    "choice_a_text": "Hold the look",
-    "choice_b_text": "Break it off",
-    "outcome_a_text": "Well.\nGuess that’s me, then.\nStanding here.",
-    "outcome_b_text": "Right.\nToo much reality for one balcony.\nDone.",
-    "reflection_a_text": "They’ll forget me in ten seconds.\nI’ll forget their face in five.\nThat’s fair.",
-    "reflection_b_text": "",
-    "memory_fragment_text": "I learned early not to stay too long.\nLeaving quietly kept things simple.\nMost of the time, no one asked where I went.\nAnd I didn’t volunteer it.",
-    "fragment_on_a": false,
-    "fragment_on_b": true,
-    "post_hover_line": "The window’s dark again. Nothing follows."
+	"window_id": "noticed_01",
+	"cover_image": "res://assets/window_covers/window_cover.png",
+	"hover_line": "A light clicks on. Someone moves closer to the glass.",
+	"vignette_text": "I’m not the only one looking.\nThey stop for a second, adjusting their eyes.\nWe notice each other at about the same time.\nNo rush. No anger.\nJust an unexpected overlap.",
+	"choice_a_text": "Hold the look",
+	"choice_b_text": "Break it off",
+	"outcome_a_text": {
+	  "numb": "They saw me.\nSo what.",
+	  "grounded": "Well.\nGuess that’s me, then.\nStanding here.",
+	  "raw": "I don’t look away.\nI let it land.\nI let myself be seen."
+	},
+	"outcome_b_text": {
+	  "numb": "I’m gone.\nProblem solved.",
+	  "grounded": "Right.\nToo much reality for one balcony.\nDone.",
+	  "raw": "I snap away.\nLike being noticed is dangerous.\nBecause it used to be."
+	},
+	"reflection_a_text": {
+	  "numb": "They’ll forget.\nI’ll forget.\nClean.",
+	  "grounded": "They’ll forget me in ten seconds.\nI’ll forget their face in five.\nThat’s fair.",
+	  "raw": "I pretend it’s fair.\nIt’s not fairness.\nIt’s loneliness with rules."
+	},
+	"reflection_b_text": {
+	  "numb": "No contact.\nNo risk.",
+	  "grounded": "I break it first.\nA habit that feels like control.",
+	  "raw": "I leave before they can decide what I am.\nThat’s the reflex.\nThat’s the wound."
+	},
+	"memory_fragment_text": {
+	  "numb": "Leaving early.\nKeeping it simple.\nNot being asked.",
+	  "grounded": "I learned early not to stay too long.\nLeaving quietly kept things simple.\nMost of the time, no one asked where I went.\nAnd I didn’t volunteer it.",
+	  "raw": "I disappeared because being present made me a target.\nNow I do it even when no one’s aiming."
+	},
+	"fragment_on_a": false,
+	"fragment_on_b": true,
+	"post_hover_line": "The window’s dark again. Nothing follows."
   },
   {
-    "window_id": "fight_01",
-    "hover_line": "Raised voices slip through an open window.",
-    "vignette_text": "Two people, same room.\nSame volume, different words.\nOne of them laughs at the wrong time.\nThe other doesn’t like that.\nIt keeps circling back.",
-    "choice_a_text": "Follow the noise",
-    "choice_b_text": "Tune it out",
-    "outcome_a_text": "I let it run for a bit.\nSame loop, same energy.\nPredictable.",
-    "outcome_b_text": "I cut it off mid-sentence.\nNot my show.\nNot tonight.",
-    "reflection_a_text": "They’ll keep going with or without me.\nPeople always do.\nI don’t need the whole track.",
-    "reflection_b_text": "",
-    "memory_fragment_text": "I used to do this with real shouting.\nTurn it into background, pretend it’s normal.\nIt worked in the moment.\nIt still shows up anyway.",
-    "fragment_on_a": false,
-    "fragment_on_b": true,
-    "post_hover_line": "The window’s still open. They lowered their voices."
+	"window_id": "fight_01",
+	"cover_image": "res://assets/window_covers/arguement_cover.png",
+	"hover_line": "Raised voices slip through an open window.",
+	"vignette_text": "Two people, same room.\nSame volume, different words.\nOne of them laughs at the wrong time.\nThe other doesn’t like that.\nIt keeps circling back.",
+	"choice_a_text": "Follow the noise",
+	"choice_b_text": "Tune it out",
+	"outcome_a_text": {
+	  "numb": "Same loop.\nSame volume.\nI watch.",
+	  "grounded": "I let it run for a bit.\nSame loop, same energy.\nPredictable.",
+	  "raw": "I stay with it.\nBecause it matches my body’s memory.\nBecause it feels like home."
+	},
+	"outcome_b_text": {
+	  "numb": "Mute.\nNext.",
+	  "grounded": "I cut it off mid-sentence.\nNot my show.\nNot tonight.",
+	  "raw": "I can’t take it.\nMy chest tightens like it’s happening here.\nSo I run."
+	},
+	"reflection_a_text": {
+	  "numb": "People fight.\nThat’s all.",
+	  "grounded": "They’ll keep going with or without me.\nPeople always do.\nI don’t need the whole track.",
+	  "raw": "I know this rhythm.\nI learned it before I learned sleep.\nI still hear it in quiet rooms."
+	},
+	"reflection_b_text": {
+	  "numb": "I don’t listen.\nI survive.",
+	  "grounded": "Tuning out is a skill.\nI got good at it early.",
+	  "raw": "I tell myself I’m choosing peace.\nWhat I’m choosing is avoidance.\nAnd it costs."
+	},
+	"memory_fragment_text": {
+	  "numb": "Shouting through walls.\nMe turning it into weather.",
+	  "grounded": "I used to do this with real shouting.\nTurn it into background, pretend it’s normal.\nIt worked in the moment.\nIt still shows up anyway.",
+	  "raw": "I trained myself not to react.\nNow I don’t know how to stop reacting.\nThat’s what it did."
+	},
+	"fragment_on_a": false,
+	"fragment_on_b": true,
+	"post_hover_line": "The window’s still open. They lowered their voices."
   }
 ]

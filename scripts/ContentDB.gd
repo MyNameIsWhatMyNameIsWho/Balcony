@@ -101,6 +101,7 @@ func _load_windows() -> void:
 		_warn_missing_keys(entry, ["choice_a_text", "choice_b_text"], "window '%s'" % window_id)
 		_warn_missing_keys(entry, ["outcome_a_text", "outcome_b_text"], "window '%s'" % window_id)
 		_warn_missing_keys(entry, ["reflection_a_text", "reflection_b_text"], "window '%s'" % window_id)
+		_warn_missing_keys(entry, ["cover_image"], "window '%s' (cover image)" % window_id)
 
 		if not entry.has("fragment_on_a"):
 			push_warning("ContentDB: window '%s' missing key 'fragment_on_a' (will default to false)" % window_id)

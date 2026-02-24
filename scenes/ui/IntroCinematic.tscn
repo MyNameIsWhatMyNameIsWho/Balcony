@@ -1,0 +1,49 @@
+[gd_scene load_steps=4 format=3 uid="uid://introcinematicxxx"]
+
+[ext_resource type="Script" path="res://scripts/intro_cinematic.gd" id="1_intro_cinematic"]
+[ext_resource type="Script" path="res://scripts/cutscene/CutscenePlayer.gd" id="2_cutscene_player"]
+[ext_resource type="Resource" path="res://data/intro_sequence.tres" id="3_intro_sequence"]
+
+[node name="IntroCinematic" type="CanvasLayer"]
+layer = 999
+script = ExtResource("1_intro_cinematic")
+sequence = ExtResource("3_intro_sequence")
+
+[node name="Root" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+
+[node name="Overlay" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 1
+color = Color(0, 0, 0, 1)
+
+[node name="Subtitles" type="Label" parent="Root"]
+layout_mode = 0
+anchors_preset = 10
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -540.0
+offset_top = -170.0
+offset_right = 540.0
+offset_bottom = -40.0
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+theme_override_font_sizes/font_size = 28
+
+[node name="CutscenePlayer" type="Node" parent="."]
+script = ExtResource("2_cutscene_player")
+

@@ -1,83 +1,83 @@
 [
   {
-    "ending_id": "routine",
-    "min_fragments": 0,
-    "max_fragments": 1,
-    "trigger_type": "fragments",
-    "min_avoids": 0,
-    "lines": [
-      "I step back inside.",
-      "The flat smells the same as when I left it.",
-      "",
-      "Tomorrow’s already lined up.",
-      "Alarm, streets, parcels, small talk.",
-      "",
-      "Nothing needs fixing tonight.",
-      "",
-      "I turn off the light."
-    ]
+	"ending_id": "routine",
+	"min_fragments": 0,
+	"max_fragments": 1,
+	"trigger_type": "fragments",
+	"min_avoids": 0,
+	"lines": [
+	  "I step back inside.",
+	  "The flat smells the same as when I left it.",
+	  "",
+	  "Tomorrow’s already lined up.",
+	  "Alarm, streets, parcels, small talk.",
+	  "",
+	  "Nothing needs fixing tonight.",
+	  "",
+	  "I turn off the light."
+	]
   },
   {
-    "ending_id": "partial",
-    "min_fragments": 2,
-    "max_fragments": 4,
-    "trigger_type": "fragments",
-    "min_avoids": 0,
-    "lines": [
-      "I stand there for a second longer.",
-      "Long enough to notice the quiet.",
-      "",
-      "Some things make more sense now.",
-      "Not enough to change anything.",
-      "Enough to remember later.",
-      "",
-      "I go back inside.",
-      "The night stays where it is."
-    ]
+	"ending_id": "partial",
+	"min_fragments": 2,
+	"max_fragments": 4,
+	"trigger_type": "fragments",
+	"min_avoids": 0,
+	"lines": [
+	  "I stand there for a second longer.",
+	  "Long enough to notice the quiet.",
+	  "",
+	  "Some things make more sense now.",
+	  "Not enough to change anything.",
+	  "Enough to remember later.",
+	  "",
+	  "I go back inside.",
+	  "The night stays where it is."
+	]
   },
   {
-    "ending_id": "break",
-    "min_fragments": 5,
-    "max_fragments": 6,
-    "trigger_type": "fragments",
-    "min_avoids": 0,
-    "lines": [
-      "I don’t move right away.",
-      "",
-      "It’s not uncomfortable.",
-      "Just… harder to ignore.",
-      "",
-      "I’ve been standing here a lot.",
-      "Watching instead of joining.",
-      "Calling it enough.",
-      "",
-      "Maybe it isn’t.",
-      "",
-      "I stay with that thought",
-      "longer than usual."
-    ]
+	"ending_id": "break",
+	"min_fragments": 5,
+	"max_fragments": 6,
+	"trigger_type": "fragments",
+	"min_avoids": 0,
+	"lines": [
+	  "I don’t move right away.",
+	  "",
+	  "It’s not uncomfortable.",
+	  "Just… harder to ignore.",
+	  "",
+	  "I’ve been standing here a lot.",
+	  "Watching instead of joining.",
+	  "Calling it enough.",
+	  "",
+	  "Maybe it isn’t.",
+	  "",
+	  "I stay with that thought",
+	  "longer than usual."
+	]
   },
   {
-    "ending_id": "accident",
-    "min_fragments": 0,
-    "max_fragments": 1,
-    "trigger_type": "avoidance",
-    "min_avoids": 6,
-    "lines": [
-      "The railing’s cold under my hands.",
-      "I lean on it a bit.",
-      "",
-      "People joke about this kind of thing.",
-      "",
-      "Funny how fast it would be.",
-      "",
-      "My foot shifts.",
-      "Metal scrapes.",
-      "",
-      "Wait—",
-      "",
-      "No.",
-      "I don’t want to die."
-    ]
+	"ending_id": "accident",
+	"min_fragments": 0,
+	"max_fragments": 1,
+	"trigger_type": "avoidance",
+	"min_avoids": 6,
+	"lines": [
+	  "The railing’s cold under my hands.",
+	  "I lean on it a bit.",
+	  "",
+	  "People joke about this kind of thing.",
+	  "",
+	  "Funny how fast it would be.",
+	  "",
+	  "My foot shifts.",
+	  "Metal scrapes.",
+	  "",
+	  "Wait—",
+	  "",
+	  "No.",
+	  "I don’t want to die."
+	]
   }
 ]

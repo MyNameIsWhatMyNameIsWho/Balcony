@@ -10,6 +10,7 @@ signal window_choice_made(choice: String)
 @export var typing_enabled: bool = true
 @export var typing_chars_per_sec: float = 35.0
 @export var typing_sound_interval: float = 0.04
+@export var autoplay_intro: bool = true
 
 var active := false
 var current_lines: Array[String] = []
@@ -94,13 +95,16 @@ func _ready() -> void:
 		choice_right_button.mouse_entered.connect(_on_choice_right_mouse_entered)
 		choice_right_button.mouse_exited.connect(_on_choice_right_mouse_exited)
 	call_deferred("_cache_choice_bases")
-	var intro := ContentDB.get_intro_lines()
-	if intro.size() > 0:
-		# Intro shows in "blocks" separated by an empty line in JSON.
-		# Each press advances to the next block (not the next line).
-		var blocks := _split_into_blocks(intro)
-		if blocks.size() > 0:
-			show_dialogue(blocks, "intro", true)
+	if type_sound:
+		type_sound.bus = &"UI"
+	if autoplay_intro:
+		var intro := ContentDB.get_intro_lines()
+		if intro.size() > 0:
+			# Intro shows in "blocks" separated by an empty line in JSON.
+			# Each press advances to the next block (not the next line).
+			var blocks := _split_into_blocks(intro)
+			if blocks.size() > 0:
+				show_dialogue(blocks, "intro", true)
 
 func _cache_stop_base() -> void:
 	# Runs deferred so UI layout has computed sizes/positions.
@@ -133,6 +137,16 @@ func _split_into_blocks(lines: Array[String]) -> Array[String]:
 	if buffer.size() > 0:
 		blocks.append("\n".join(buffer))
 	return blocks
+
+func play_intro_dialogue(lock_controls: bool = true) -> void:
+	# Restores the original intro behavior: ContentDB intro blocks + press E to advance.
+	var intro := ContentDB.get_intro_lines()
+	if intro.is_empty():
+		return
+	var blocks := _split_into_blocks(intro)
+	if blocks.is_empty():
+		return
+	show_dialogue(blocks, "intro", lock_controls)
 
 func show_blocked_dialogue(lines: Array[String], dialogue_id: String = "", lock_controls: bool = true) -> void:
 	# Same behavior as intro: JSON lines are grouped into blocks separated by empty lines.

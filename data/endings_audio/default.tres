@@ -1,0 +1,30 @@
+[gd_resource type="Resource" script_class="CutsceneSequence" load_steps=5 format=3 uid="uid://dis7gkt7i2080"]
+
+[ext_resource type="Script" path="res://scripts/cutscene/CutsceneSequence.gd" id="1_seq"]
+[ext_resource type="Script" path="res://scripts/cutscene/CutsceneCue.gd" id="2_cue"]
+[ext_resource type="AudioStream" uid="uid://e1d7dig1i4mx" path="res://assets/kenney_rpg-audio/Audio/amber2023-inhale-exhale-230173.mp3" id="3_breath"]
+
+[sub_resource type="Resource" id="CutsceneCue_1"]
+script = ExtResource("2_cue")
+time = 0.0
+type = 0
+audio = ExtResource("3_breath")
+bus = &"Foley"
+volume_db = 50.0
+pitch_scale = 1.0
+fade_to_alpha = 0.0
+fade_duration = 1.0
+subtitle_text = ""
+intro_chars_per_sec = 18.0
+intro_min_seconds = 2.2
+intro_max_seconds = 10.0
+call_target_path = NodePath("")
+call_method = &""
+call_arg = ""
+
+[resource]
+script = ExtResource("1_seq")
+cues = Array[ExtResource("2_cue")]([SubResource("CutsceneCue_1")])
+block_input = false
+allow_debug_skip = false
+debug_skip_action = &"ui_accept"

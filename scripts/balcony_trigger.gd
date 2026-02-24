@@ -29,11 +29,18 @@ extends Area3D
 
 # DEBUG: press E during zoom-in to instantly snap camera to target.
 @export var debug_skip_zoom_on_interact: bool = true
+# DEBUG: for fast ending iteration, expose Stop Watching immediately on balcony enter.
+@export var debug_show_stop_watching_on_enter: bool = true
 
 @export var window_base_texture: Texture2D
 # Window cover image shown on StoryScreen during zoom-in.
 @export var window_cover_texture: Texture2D
 @export var window_seen_texture: Texture2D
+
+# Per-window cover images (loaded from `data/windows.json` via ContentDB key `cover_image`).
+# Cache by window_id and by path so we don’t repeatedly load resources.
+var _cover_texture_cache: Dictionary = {} # window_id -> Texture2D
+var _texture_path_cache: Dictionary = {} # path -> Texture2D
 
 
 var in_area := false
@@ -69,6 +76,7 @@ var story_window_id: String = ""
 var story_window_node: Area3D = null
 var story_choice: String = ""
 var story_gained_fragment := false
+var story_fragment_was_available := false
 var story_data: Dictionary = {}
 var storyscreen_pixel_tween: Tween = null
 var last_seen_window_node: Area3D = null
@@ -82,6 +90,8 @@ var balcony_focus_done := false
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
+	_cover_texture_cache.clear()
+	_texture_path_cache.clear()
 
 	window_selector.window_selected.connect(_on_window_selected)
 	window_selector.window_hovered.connect(_on_window_hovered)
@@ -154,6 +164,8 @@ func _on_body_entered(body: Node) -> void:
 	if body != character:
 		return
 	in_area = true
+	if _should_force_stop_watching_visible():
+		_set_stop_watching_visible(true)
 	if cooldown or selection_active or balcony_intro_active:
 		return
 	_start_balcony_intro()
@@ -162,6 +174,7 @@ func _on_body_exited(body: Node) -> void:
 	if body != character:
 		return
 	in_area = false
+	_set_stop_watching_visible(false)
 	cooldown = false
 
 func _activate_selection() -> void:
@@ -241,19 +254,61 @@ func _maybe_finish_balcony_intro() -> void:
 func _prime_story_screens() -> void:
 	# Assign base picture (and seen picture for resolved windows) up front,
 	# so every StoryScreen is ready when it becomes visible.
-	if window_base_texture == null and window_seen_texture == null:
+	if window_base_texture == null and window_cover_texture == null and window_seen_texture == null:
 		return
+	# From the moment you enter the balcony trigger zone, covers should already feel “unclear”.
+	# Keep the same chunky pixel size used during camera movement to avoid a sudden jump on click.
+	var in_balcony_mode := in_area or balcony_intro_active or selection_active
+	var px := storyscreen_pixel_size_during_camera_move if in_balcony_mode else storyscreen_pixel_size_in_focus
 	for node in get_tree().get_nodes_in_group("selectable_window"):
 		var w := node as Area3D
 		if w == null:
 			continue
 		var id := _get_window_id(w)
-		var tex: Texture2D = window_base_texture
-		if id != "" and GameState.is_resolved(id) and window_seen_texture != null:
+		var tex: Texture2D = null
+		if id != "" and GameState.is_resolved(id):
 			tex = window_seen_texture
+		else:
+			# Unresolved windows show their own cover image.
+			tex = _get_window_cover_texture(id)
+			if tex == null:
+				tex = window_base_texture
 		if tex != null:
 			_apply_story_texture(w, tex)
-			_set_storyscreen_pixel_size(w, storyscreen_pixel_size_in_focus)
+			_set_storyscreen_pixel_size(w, px)
+
+func _load_texture_cached(path: String) -> Texture2D:
+	var p := path.strip_edges()
+	if p == "":
+		return null
+	if _texture_path_cache.has(p):
+		return _texture_path_cache[p] as Texture2D
+	var res := load(p)
+	var tex := res as Texture2D
+	if tex == null:
+		push_warning("BalconyTrigger: cover_image is not a Texture2D: %s" % p)
+	_texture_path_cache[p] = tex
+	return tex
+
+func _get_window_cover_texture(window_id: String) -> Texture2D:
+	var id := window_id.strip_edges()
+	if id != "" and _cover_texture_cache.has(id):
+		return _cover_texture_cache[id] as Texture2D
+
+	var tex: Texture2D = null
+	if id != "":
+		var data: Dictionary = ContentDB.get_window_data(id)
+		var path := str(data.get("cover_image", "")).strip_edges()
+		if path != "":
+			tex = _load_texture_cached(path)
+
+	# Fallbacks (old behavior).
+	if tex == null:
+		tex = window_cover_texture if window_cover_texture != null else window_base_texture
+
+	if id != "":
+		_cover_texture_cache[id] = tex
+	return tex
 
 func _set_all_story_screens_visible(show: bool) -> void:
 	for node in get_tree().get_nodes_in_group("selectable_window"):
@@ -351,6 +406,9 @@ func _on_window_selected(window: Area3D) -> void:
 
 	if GameState.is_resolved(window_id):
 		return
+	# Special windows gating (earned discomfort).
+	if _is_window_locked(window_id):
+		return
 
 	selection_active = false
 	window_focus_active = true
@@ -371,6 +429,7 @@ func _on_window_selected(window: Area3D) -> void:
 	story_window_node = window
 	story_choice = ""
 	story_gained_fragment = false
+	story_fragment_was_available = false
 
 	# Use your ContentDB API name here.
 	story_data = ContentDB.get_window_data(window_id)
@@ -400,12 +459,48 @@ func _show_hover_text(window: Area3D) -> void:
 		return
 
 	var data: Dictionary = ContentDB.get_window_data(window_id)
+	if _is_window_locked(window_id):
+		var locked_line := str(data.get("locked_hover_line", "")).strip_edges()
+		if locked_line == "":
+			locked_line = "Not yet."
+		dialogue_manager.show_hover_line(locked_line)
+		return
 	var line_key := "post_hover_line" if GameState.is_resolved(window_id) else "hover_line"
 	var line := str(data.get(line_key, "")).strip_edges()
 	if line == "":
 		return
 
 	dialogue_manager.show_hover_line(line)
+
+func _is_window_locked(window_id: String) -> bool:
+	# Curtains unlock after you’ve been dodging (avoidance).
+	if window_id == "curtains_01":
+		return GameState.avoids < 3
+	# Noticed unlocks after you’ve stared long enough (exposure).
+	if window_id == "noticed_01":
+		return GameState.exposure < 3
+	return false
+
+func _tiered_text(value: Variant) -> String:
+	# Supports either a plain string, or a dict: { "numb": "...", "grounded": "...", "raw": "..." }.
+	if typeof(value) == TYPE_DICTIONARY:
+		var d: Dictionary = value
+		var tier := String(GameState.get_voice_tier())
+		var s := str(d.get(tier, "")).strip_edges()
+		if s != "":
+			return s
+		# Fallbacks.
+		for k in ["grounded", "numb", "raw"]:
+			s = str(d.get(k, "")).strip_edges()
+			if s != "":
+				return s
+		return ""
+	return str(value).strip_edges()
+
+func _can_access_fragment_now() -> bool:
+	# “Tolerable band” for accessing memory: 2–6.
+	# Above that (raw), we still allow it, but tiered text will shift to “raw”.
+	return GameState.exposure >= 2
 
 func _hide_hover_text() -> void:
 	if dialogue_manager:
@@ -718,15 +813,37 @@ func _on_window_choice_made(choice: String) -> void:
 		return
 
 	story_choice = choice
-	story_gained_fragment = (bool(story_data.get("fragment_on_a", false)) if choice == "A" else bool(story_data.get("fragment_on_b", false)))
+	# New system:
+	# - Exposure increases on Engage (A).
+	# - Avoidance increases on Look away (B) (already).
+	# - Distortion increases when you Look away (B) while a fragment was available to Engage.
+	# - Fragments are “exposure-dependent”: you can only access them once exposure >= 2.
 
-	var outcome := str(story_data.get("outcome_a_text", "")) if choice == "A" else str(story_data.get("outcome_b_text", ""))
+	var fragment_on_a := bool(story_data.get("fragment_on_a", false))
+	var fragment_on_b := bool(story_data.get("fragment_on_b", false))
+
+	if choice == "A":
+		GameState.add_exposure(1)
+	else:
+		GameState.add_avoid()
+
+	# Track whether this window *could* offer a fragment if you engaged.
+	story_fragment_was_available = fragment_on_a
+	if choice == "B" and story_fragment_was_available and _can_access_fragment_now():
+		GameState.add_distortion(1)
+
+	var wants_fragment := (fragment_on_a if choice == "A" else fragment_on_b)
+	story_gained_fragment = wants_fragment and _can_access_fragment_now()
+
+	var outcome_v: Variant = story_data.get("outcome_a_text", "") if choice == "A" else story_data.get("outcome_b_text", "")
+	var outcome := _tiered_text(outcome_v)
 	var result := ""
 
 	if story_gained_fragment:
-		result = str(story_data.get("memory_fragment_text", ""))
+		result = _tiered_text(story_data.get("memory_fragment_text", ""))
 	else:
-		result = str(story_data.get("reflection_a_text", "")) if choice == "A" else str(story_data.get("reflection_b_text", ""))
+		var refl_v: Variant = story_data.get("reflection_a_text", "") if choice == "A" else story_data.get("reflection_b_text", "")
+		result = _tiered_text(refl_v)
 
 	var outcome_lines: Array[String] = [outcome, result]
 	dialogue_manager.show_dialogue(outcome_lines, "window_outcome:" + story_window_id, true)
@@ -741,8 +858,6 @@ func _resolve_window_and_return() -> void:
 		GameState.mark_resolved(story_window_id)
 		if story_gained_fragment:
 			GameState.add_fragment_once(story_window_id)
-		if story_choice == "B":
-			GameState.add_avoid()
 
 	# Remember which window was just seen so we can swap its StoryScreen on return.
 	last_seen_window_node = story_window_node
@@ -759,7 +874,6 @@ func _on_stop_watching_pressed() -> void:
 		window_focus_active = false
 		window_selector.set_enabled(false)
 		_hide_hover_text()
-		_set_pixelize_override(false)
 		character.set_controls_enabled(false, true)
 		if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
 			dialogue_manager.set_external_controls_lock(false)
@@ -768,6 +882,9 @@ func _on_stop_watching_pressed() -> void:
 		ending_ui.open()
 
 func _update_stop_watching_visibility() -> void:
+	if _should_force_stop_watching_visible():
+		_set_stop_watching_visible(in_area and not window_focus_active)
+		return
 	if dialogue_manager == null or not dialogue_manager.has_method("set_stop_watching_visible"):
 		return
 
@@ -775,22 +892,33 @@ func _update_stop_watching_visibility() -> void:
 		dialogue_manager.set_stop_watching_visible(false)
 		return
 
-	# Count total windows. ContentDB exposes `windows` (Dictionary keyed by window_id).
-	# Fall back to counting scene windows if something is off.
-	var total: int = 0
-	if ContentDB != null and "windows" in ContentDB:
-		var w: Variant = ContentDB.windows
-		if typeof(w) == TYPE_DICTIONARY:
-			total = (w as Dictionary).size()
-	if total <= 0:
-		total = get_tree().get_nodes_in_group("selectable_window").size()
+	# Show Stop Watching when there are no actionable windows left:
+	# i.e. every remaining unresolved window is currently locked by the “special windows” rules.
+	# This prevents softlocks where the last remaining windows are gated behind state you can no longer change.
+	var actionable := 0
+	for node in get_tree().get_nodes_in_group("selectable_window"):
+		var w := node as Area3D
+		if w == null:
+			continue
+		var id := _get_window_id(w)
+		if id == "":
+			continue
+		if GameState.is_resolved(id):
+			continue
+		if _is_window_locked(id):
+			continue
+		actionable += 1
+		if actionable > 0:
+			break
 
-	if total <= 0:
-		dialogue_manager.set_stop_watching_visible(false)
-		return
+	dialogue_manager.set_stop_watching_visible(actionable == 0)
 
-	var resolved: int = GameState.resolved_windows.size()
-	dialogue_manager.set_stop_watching_visible(resolved >= total)
+func _should_force_stop_watching_visible() -> bool:
+	return OS.is_debug_build() and debug_show_stop_watching_on_enter
+
+func _set_stop_watching_visible(show: bool) -> void:
+	if dialogue_manager and dialogue_manager.has_method("set_stop_watching_visible"):
+		dialogue_manager.set_stop_watching_visible(show)
 
 func _return_to_selection() -> void:
 	window_focus_active = false
@@ -809,8 +937,10 @@ func _return_to_selection() -> void:
 		# While returning, transition StoryScreen pixels back smoothly (64 -> 8).
 		if last_seen_window_node != null:
 			# Keep the just-opened window on the cover during the return move.
-			if window_cover_texture != null:
-				_apply_story_texture(last_seen_window_node, window_cover_texture)
+			var last_id := _get_window_id(last_seen_window_node)
+			var cover := _get_window_cover_texture(last_id)
+			if cover != null:
+				_apply_story_texture(last_seen_window_node, cover)
 			_start_storyscreen_pixel_return(last_seen_window_node, return_duration)
 
 		if zoom_tween:
@@ -837,7 +967,8 @@ func _on_return_arrived() -> void:
 			storyscreen_pixel_tween.kill()
 			storyscreen_pixel_tween = null
 		_apply_story_texture(last_seen_window_node, window_seen_texture)
-		_set_storyscreen_pixel_size(last_seen_window_node, storyscreen_pixel_size_in_focus)
+		# Back in selection: keep it chunky/unclear like the other windows.
+		_set_storyscreen_pixel_size(last_seen_window_node, storyscreen_pixel_size_during_camera_move)
 		last_seen_window_node = null
 
 	if in_area:
@@ -863,5 +994,5 @@ func _show_story_screen(window: Area3D) -> void:
 	var screen := window.get_node_or_null("StoryScreen") as MeshInstance3D
 	if screen:
 		screen.visible = true
-		_apply_story_texture(window, window_cover_texture)
-
+		var id := _get_window_id(window)
+		_apply_story_texture(window, _get_window_cover_texture(id))
