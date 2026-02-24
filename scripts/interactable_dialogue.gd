@@ -16,6 +16,7 @@ extends Area3D
 var player_inside := false
 var used := false
 var dialogue_id: String = ""
+var _hint_visible := false
 
 @onready var dialogue_manager := get_node_or_null(dialogue_manager_path)
 
@@ -37,28 +38,44 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	if used and trigger_once:
-		if dialogue_manager:
-			dialogue_manager.set_interact_hint(false)
+		_hide_hint()
 		return
 	if not player_inside:
-		if dialogue_manager:
-			dialogue_manager.set_interact_hint(false)
+		_hide_hint()
 		return
 	if dialogue_manager == null:
+		_hide_hint()
 		return
 	if dialogue_manager.is_active():
-		dialogue_manager.set_interact_hint(false)
+		_hide_hint()
 		return
 	if require_look and not _is_looked_at():
-		dialogue_manager.set_interact_hint(false)
+		_hide_hint()
 		return
-	dialogue_manager.set_interact_hint(true, hint_text)
+	_show_hint()
 	if Input.is_action_just_pressed(interact_action):
-		dialogue_manager.set_interact_hint(false)
+		_hide_hint()
 		dialogue_manager.show_dialogue(_page_lines(dialogue_lines), dialogue_id, true)
 		if followup_lines.size() > 0:
 			dialogue_manager.queue_dialogue(_page_lines(followup_lines), name + "_followup")
 		used = true
+
+func _show_hint() -> void:
+	if dialogue_manager == null:
+		return
+	if _hint_visible:
+		return
+	dialogue_manager.set_interact_hint(true, hint_text)
+	_hint_visible = true
+
+func _hide_hint() -> void:
+	if dialogue_manager == null:
+		_hint_visible = false
+		return
+	if not _hint_visible:
+		return
+	dialogue_manager.set_interact_hint(false)
+	_hint_visible = false
 
 func _page_lines(lines: Array[String]) -> Array[String]:
 	# If the author inserted empty lines, treat them as explicit page breaks.
