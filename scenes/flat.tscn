@@ -9,7 +9,7 @@
 [ext_resource type="ArrayMesh" uid="uid://ncaaajktjdiu" path="res://assets/OBJ/Chair_1.obj" id="5_n8btb"]
 [ext_resource type="ArrayMesh" uid="uid://idhcw35kt1ky" path="res://assets/OBJ/Couch_Medium2.obj" id="6_pimkc"]
 [ext_resource type="Script" path="res://scripts/WindowData.gd" id="6_window_data"]
-[ext_resource type="Texture2D" uid="uid://bu1x2b5fa168q" path="res://assets/window_covers/window_cover.png" id="7_jcmmq"]
+[ext_resource type="Texture2D" path="res://assets/window_covers/window_cover.png" id="7_jcmmq"]
 [ext_resource type="ArrayMesh" uid="uid://clht7tc120gs3" path="res://assets/OBJ/Kitchen_1Drawers.obj" id="7_qu5lk"]
 [ext_resource type="Texture2D" uid="uid://c3my26d5cbanl" path="res://assets/textures/Buidling_4_baseColor.jpeg" id="8_c6c0t"]
 [ext_resource type="ArrayMesh" uid="uid://bcwwtbxw8vlap" path="res://assets/OBJ/Kitchen_2Drawers.obj" id="8_wxaa3"]
@@ -619,6 +619,8 @@ selection_pan_max = Vector2(0.4, 2)
 selection_pan_smoothing_y = 1.0
 selection_pan_y_reach = 0.1
 pixel_size_in_selection = 8.0
+debug_skip_zoom_on_interact = false
+debug_show_stop_watching_on_enter = false
 window_base_texture = ExtResource("9_nqasr")
 window_cover_texture = ExtResource("7_jcmmq")
 window_seen_texture = ExtResource("9_mapy8")
