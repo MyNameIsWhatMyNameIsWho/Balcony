@@ -103,11 +103,9 @@ func _ready() -> void:
 	window_selector.window_unhovered.connect(_on_window_unhovered)
 	window_selector.selection_cancelled.connect(_on_selection_cancelled)
 
-	if dialogue_manager and dialogue_manager.has_signal("stop_watching_pressed"):
+	if dialogue_manager:
 		dialogue_manager.stop_watching_pressed.connect(_on_stop_watching_pressed)
-	if dialogue_manager and dialogue_manager.has_signal("dialogue_finished"):
 		dialogue_manager.dialogue_finished.connect(_on_dialogue_finished)
-	if dialogue_manager and dialogue_manager.has_signal("window_choice_made"):
 		dialogue_manager.window_choice_made.connect(_on_window_choice_made)
 
 	GameState.resolved_windows_changed.connect(_on_resolved_windows_changed)
@@ -190,7 +188,7 @@ func _activate_selection() -> void:
 	# Selection mode: movement off, cursor visible.
 	character.set_controls_enabled(false, true)
 	_set_pixelize_override(true)
-	if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
+	if dialogue_manager:
 		dialogue_manager.set_external_controls_lock(true)
 	_focus_camera()
 	window_selector.set_enabled(true)
@@ -205,7 +203,7 @@ func _activate_selection_after_intro() -> void:
 	# Selection mode: movement off, cursor visible.
 	character.set_controls_enabled(false, true)
 	_set_pixelize_override(true)
-	if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
+	if dialogue_manager:
 		dialogue_manager.set_external_controls_lock(true)
 	window_selector.set_enabled(true)
 	_prime_story_screens()
@@ -226,7 +224,7 @@ func _start_balcony_intro() -> void:
 
 	# Lock movement immediately but keep cursor hidden/captured during intro.
 	character.set_controls_enabled(false, false)
-	if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
+	if dialogue_manager:
 		dialogue_manager.set_external_controls_lock(true)
 
 	# Start camera transition and intro text at the same time.
@@ -239,7 +237,7 @@ func _start_balcony_intro() -> void:
 		_tween_pixel_size(pixelize_original_pixel_size, pixel_size_in_selection, focus_duration)
 
 	var enter_lines: Array[String] = ContentDB.get_balcony_enter_lines()
-	if dialogue_manager and dialogue_manager.has_method("show_blocked_dialogue") and enter_lines.size() > 0:
+	if dialogue_manager and enter_lines.size() > 0:
 		dialogue_manager.show_blocked_dialogue(enter_lines, "balcony_enter", false)
 	else:
 		balcony_intro_done = true
@@ -335,12 +333,12 @@ func _deactivate_selection() -> void:
 	_set_all_story_screens_visible(true)
 	_set_pixelize_override(false)
 	_restore_camera()
-	if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
+	if dialogue_manager:
 		dialogue_manager.set_external_controls_lock(false)
 	character.set_controls_enabled(true)
 	cooldown = in_area
 
-	if dialogue_manager and dialogue_manager.has_method("set_stop_watching_visible"):
+	if dialogue_manager:
 		dialogue_manager.set_stop_watching_visible(false)
 
 func _focus_camera() -> void:
@@ -423,9 +421,9 @@ func _on_window_selected(window: Area3D) -> void:
 	_hide_hover_text()
 	selection_pan = Vector2.ZERO
 
-	if dialogue_manager and dialogue_manager.has_method("set_stop_watching_visible"):
+	if dialogue_manager:
 		dialogue_manager.set_stop_watching_visible(false)
-	if dialogue_manager and dialogue_manager.has_method("close_choice"):
+	if dialogue_manager:
 		dialogue_manager.close_choice()
 
 	_show_story_screen(window)
@@ -541,7 +539,7 @@ func _ease_to_window_camera(window: Area3D) -> void:
 		zoom_tween = get_tree().create_tween()
 		zoom_in_progress = true
 		zoom_tween.tween_property(building_camera, "global_transform", zoom_target_transform, zoom_duration)
-		zoom_tween.finished.connect(Callable(self, "_on_zoom_arrived").bind(zoom_target_transform), Object.CONNECT_ONE_SHOT)
+		zoom_tween.finished.connect(_on_zoom_arrived.bind(zoom_target_transform), Object.CONNECT_ONE_SHOT)
 		return
 
 	# Fallback: computed zoom towards window.
@@ -556,7 +554,7 @@ func _ease_to_window_camera(window: Area3D) -> void:
 	zoom_tween = get_tree().create_tween()
 	zoom_in_progress = true
 	zoom_tween.tween_property(building_camera, "global_transform", zoom_target_transform, zoom_duration)
-	zoom_tween.finished.connect(Callable(self, "_on_zoom_arrived").bind(zoom_target_transform), Object.CONNECT_ONE_SHOT)
+	zoom_tween.finished.connect(_on_zoom_arrived.bind(zoom_target_transform), Object.CONNECT_ONE_SHOT)
 
 func _debug_finish_zoom_now() -> void:
 	if building_camera == null:
@@ -595,7 +593,7 @@ func _reset_story_state() -> void:
 		storyscreen_pixel_tween.kill()
 		storyscreen_pixel_tween = null
 
-	if dialogue_manager and dialogue_manager.has_method("close_choice"):
+	if dialogue_manager:
 		dialogue_manager.close_choice()
 
 func _get_story_screen(window: Area3D) -> MeshInstance3D:
@@ -778,8 +776,7 @@ func _start_story_after_camera(window_id: String) -> void:
 
 	# If tween exists, wait until it's finished, then open story (one-shot).
 	if zoom_tween:
-		var cb := Callable(self, "_on_camera_arrived").bind(window_id)
-		zoom_tween.finished.connect(cb, Object.CONNECT_ONE_SHOT)
+		zoom_tween.finished.connect(_on_camera_arrived.bind(window_id), Object.CONNECT_ONE_SHOT)
 	else:
 		_on_camera_arrived(window_id)
 
@@ -810,7 +807,7 @@ func _on_dialogue_finished(dialogue_id: String) -> void:
 		return
 
 	if dialogue_id == "window_vignette:" + story_window_id:
-		if dialogue_manager and dialogue_manager.has_method("open_choice"):
+		if dialogue_manager:
 			var a_text := str(story_data.get("choice_a_text", "Engage"))
 			var b_text := str(story_data.get("choice_b_text", "Look away"))
 			dialogue_manager.open_choice(a_text, b_text)
@@ -879,33 +876,33 @@ func _resolve_window_and_return() -> void:
 	_return_to_selection()
 
 func _on_stop_watching_pressed() -> void:
-	if ending_ui:
-		_reset_story_state()
-		selection_active = false
-		window_focus_active = false
-		window_selector.set_enabled(false)
-		_hide_hover_text()
-		character.set_controls_enabled(false, true)
-		if dialogue_manager and dialogue_manager.has_method("set_external_controls_lock"):
-			dialogue_manager.set_external_controls_lock(false)
-		if dialogue_manager and dialogue_manager.has_method("set_stop_watching_visible"):
-			dialogue_manager.set_stop_watching_visible(false)
-		# Dim rain sound as the ending / darken overlay takes over.
-		if rain_effect and rain_effect.has_method("fade_audio"):
-			rain_effect.fade_audio(-40.0, 2.0)
-		ending_ui.open()
+	if ending_ui == null:
+		push_warning("BalconyTrigger: ending_ui is null — Stop Watching button will not work.")
+		return
+	_reset_story_state()
+	selection_active = false
+	window_focus_active = false
+	window_selector.set_enabled(false)
+	_hide_hover_text()
+	character.set_controls_enabled(false, true)
+	if dialogue_manager:
+		dialogue_manager.set_external_controls_lock(false)
+		dialogue_manager.set_stop_watching_visible(false)
+	if rain_effect:
+		rain_effect.fade_audio(-40.0, 2.0)
+	ending_ui.open()
 
 func _on_resolved_windows_changed(total: int) -> void:
 	if total >= 3 and not rain_triggered:
 		rain_triggered = true
-		if rain_effect and rain_effect.has_method("trigger_rain"):
+		if rain_effect:
 			rain_effect.trigger_rain()
 		# Show rain dialogue after a short delay so the camera has returned to selection mode.
 		var timer := get_tree().create_timer(1.5)
 		timer.timeout.connect(_show_rain_dialogue, Object.CONNECT_ONE_SHOT)
 
 func _show_rain_dialogue() -> void:
-	if dialogue_manager == null or not dialogue_manager.has_method("show_blocked_dialogue"):
+	if dialogue_manager == null:
 		return
 	rain_dialogue_active = true
 	window_selector.set_enabled(false)
@@ -930,7 +927,7 @@ func _update_stop_watching_visibility() -> void:
 	if _should_force_stop_watching_visible():
 		_set_stop_watching_visible(in_area and not window_focus_active)
 		return
-	if dialogue_manager == null or not dialogue_manager.has_method("set_stop_watching_visible"):
+	if dialogue_manager == null:
 		return
 
 	if not selection_active or window_focus_active:
@@ -962,7 +959,7 @@ func _should_force_stop_watching_visible() -> bool:
 	return OS.is_debug_build() and debug_show_stop_watching_on_enter
 
 func _set_stop_watching_visible(show: bool) -> void:
-	if dialogue_manager and dialogue_manager.has_method("set_stop_watching_visible"):
+	if dialogue_manager:
 		dialogue_manager.set_stop_watching_visible(show)
 
 func _return_to_selection() -> void:

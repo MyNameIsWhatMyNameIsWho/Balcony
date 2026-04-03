@@ -29,18 +29,7 @@ func _ready() -> void:
 		quit_button.pressed.connect(_on_quit_pressed)
 
 func _unhandled_input(event: InputEvent) -> void:
-	# Use the project's input map when possible, but also accept raw Esc.
-	var cancel_pressed := false
-	if InputMap.has_action("ui_cancel") and event.is_action_pressed("ui_cancel"):
-		cancel_pressed = true
-	elif InputMap.has_action("exit") and event.is_action_pressed("exit"):
-		cancel_pressed = true
-
-	if cancel_pressed:
-		toggle()
-		get_viewport().set_input_as_handled()
-		return
-	if event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_ESCAPE:
+	if event.is_action_pressed("exit"):
 		toggle()
 		get_viewport().set_input_as_handled()
 
@@ -94,10 +83,6 @@ func _on_quit_pressed() -> void:
 	root.visible = false
 	get_tree().paused = false
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
-	if GameState != null:
-		GameState.reset_run()
-	if SceneLoader != null:
-		SceneLoader.change_scene(title_scene_path)
-	else:
-		get_tree().change_scene_to_file(title_scene_path)
+	GameState.reset_run()
+	SceneLoader.change_scene(title_scene_path)
 

@@ -48,18 +48,7 @@ func open() -> void:
 	_run_cinematic(blocks)
 
 func _split_into_blocks(lines: Array) -> Array[String]:
-	var blocks: Array[String] = []
-	var buffer: Array[String] = []
-	for line in lines:
-		if str(line).strip_edges() == "":
-			if buffer.size() > 0:
-				blocks.append("\n".join(buffer))
-				buffer.clear()
-		else:
-			buffer.append(str(line))
-	if buffer.size() > 0:
-		blocks.append("\n".join(buffer))
-	return blocks
+	return ContentDB.split_into_blocks(lines)
 
 func _run_cinematic(blocks: Array[String]) -> void:
 	# 1. Start inhale/exhale sound and fade to black together.
@@ -147,14 +136,8 @@ func _get_sfx_player() -> AudioStreamPlayer:
 
 func _on_restart_pressed() -> void:
 	GameState.reset_run()
-	if SceneLoader != null:
-		SceneLoader.change_scene(start_scene_path)
-	else:
-		get_tree().change_scene_to_file(start_scene_path)
+	SceneLoader.change_scene(start_scene_path)
 
 func _on_quit_pressed() -> void:
 	GameState.reset_run()
-	if SceneLoader != null:
-		SceneLoader.change_scene(menu_scene_path)
-	else:
-		get_tree().change_scene_to_file(menu_scene_path)
+	SceneLoader.change_scene(menu_scene_path)

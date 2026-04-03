@@ -47,7 +47,7 @@ func _on_finished() -> void:
 	if _dialogue != null and _dialogue.has_method("play_intro_dialogue"):
 		# Wait for the intro dialogue to finish, then release controls.
 		if _dialogue.has_signal("dialogue_finished"):
-			_dialogue.connect("dialogue_finished", Callable(self, "_on_dialogue_finished"), CONNECT_ONE_SHOT)
+			_dialogue.dialogue_finished.connect(_on_dialogue_finished, CONNECT_ONE_SHOT)
 		_dialogue.callv("play_intro_dialogue", [true])
 		return
 

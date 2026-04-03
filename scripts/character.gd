@@ -10,7 +10,6 @@ extends CharacterBody3D
 
 var look_sensitivity: float = float(ProjectSettings.get_setting("player/look_sensitivity"))
 var gravity: float = float(ProjectSettings.get_setting("physics/3d/default_gravity"))
-var velocity_y: float = 0.0
 var controls_enabled: bool = true
 
 @onready var camera: Camera3D = $Camera3D
@@ -27,7 +26,6 @@ func _physics_process(delta: float) -> void:
 
 	if not controls_enabled:
 		velocity = Vector3.ZERO
-		velocity_y = 0.0
 		move_and_slide()
 		return
 
@@ -47,11 +45,10 @@ func _physics_process(delta: float) -> void:
 		velocity.z = move_toward(velocity.z, 0.0, decel * delta)
 
 	if is_on_floor():
-		velocity_y = jump_velocity if Input.is_action_just_pressed("jump") else 0.0
+		velocity.y = jump_velocity if Input.is_action_just_pressed("jump") else 0.0
 	else:
-		velocity_y -= gravity * delta
+		velocity.y -= gravity * delta
 
-	velocity.y = velocity_y
 	move_and_slide()
 
 func _input(event: InputEvent) -> void:

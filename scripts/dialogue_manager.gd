@@ -125,18 +125,7 @@ func set_interact_hint(show_hint: bool, text: String = "") -> void:
 		interact_hint.text = text
 
 func _split_into_blocks(lines: Array[String]) -> Array[String]:
-	var blocks: Array[String] = []
-	var buffer: Array[String] = []
-	for line in lines:
-		if line.strip_edges() == "":
-			if buffer.size() > 0:
-				blocks.append("\n".join(buffer))
-				buffer.clear()
-			continue
-		buffer.append(line)
-	if buffer.size() > 0:
-		blocks.append("\n".join(buffer))
-	return blocks
+	return ContentDB.split_into_blocks(lines)
 
 func play_intro_dialogue(lock_controls: bool = true) -> void:
 	# Restores the original intro behavior: ContentDB intro blocks + press E to advance.

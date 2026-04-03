@@ -193,6 +193,22 @@ func _load_endings() -> void:
 
 		endings.append(entry)
 
+## Splits lines into blocks separated by empty lines. Shared utility used by
+## DialogueManager, EndingUI, and CutscenePlayer.
+static func split_into_blocks(lines: Array) -> Array[String]:
+	var blocks: Array[String] = []
+	var buffer: Array[String] = []
+	for line in lines:
+		if str(line).strip_edges() == "":
+			if buffer.size() > 0:
+				blocks.append("\n".join(buffer))
+				buffer.clear()
+			continue
+		buffer.append(str(line))
+	if buffer.size() > 0:
+		blocks.append("\n".join(buffer))
+	return blocks
+
 func _warn_missing_keys(data_dict: Dictionary, keys: Array[String], context: String) -> void:
 	for k in keys:
 		if not data_dict.has(k):

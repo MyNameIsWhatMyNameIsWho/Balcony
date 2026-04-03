@@ -51,19 +51,21 @@ func trigger_rain() -> void:
 	_fade_tween.tween_property(_rect, "modulate:a", 1.0, FADE_IN_DURATION)\
 		.set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 
-	# Start audio and fade it in.
+	# Start audio and fade it in (only if a stream is assigned).
 	if _audio.stream:
 		_audio.play()
-	if _audio_tween:
-		_audio_tween.kill()
-	_audio_tween = create_tween()
-	_audio_tween.tween_property(_audio, "volume_db", FULL_VOLUME_DB, FADE_IN_DURATION)\
-		.set_trans(Tween.TRANS_SINE)
+		if _audio_tween:
+			_audio_tween.kill()
+		_audio_tween = create_tween()
+		_audio_tween.tween_property(_audio, "volume_db", FULL_VOLUME_DB, FADE_IN_DURATION)\
+			.set_trans(Tween.TRANS_SINE)
 
 
 ## Smoothly move rain audio to target_db over duration seconds.
 ## Use to dim the rain when the ending / darken screen appears.
 func fade_audio(target_db: float, duration: float) -> void:
+	if not _audio.stream:
+		return
 	if _audio_tween:
 		_audio_tween.kill()
 	_audio_tween = create_tween()
