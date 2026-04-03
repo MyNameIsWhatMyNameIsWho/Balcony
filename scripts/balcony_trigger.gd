@@ -20,6 +20,7 @@ extends Area3D
 
 # Pixelization override while selecting windows (PostProcess/Pixelize shader).
 @export var pixelize_rect_path: NodePath = NodePath("../PostProcess/Pixelize")
+@export var rain_effect_path: NodePath
 @export var pixel_size_in_selection: float = 28.0
 
 # Pixelation for StoryScreen only (building stays at selection pixel size).
@@ -54,6 +55,7 @@ var cooldown := false
 @onready var dialogue_manager := get_node_or_null(dialogue_manager_path)
 @onready var ending_ui := get_node_or_null(ending_ui_path)
 @onready var pixelize_rect: ColorRect = get_node_or_null(pixelize_rect_path) as ColorRect
+@onready var rain_effect: Node = get_node_or_null(rain_effect_path) if rain_effect_path != NodePath("") else null
 
 var previous_camera: Camera3D = null
 var camera_start_transform: Transform3D
@@ -85,6 +87,9 @@ var balcony_intro_active := false
 var balcony_intro_done := false
 var balcony_focus_done := false
 
+var rain_triggered := false
+var rain_dialogue_active := false
+
 @onready var storyscreen_pixelate_shader: Shader = load("res://assets/storyscreen_pixelate.gdshader") as Shader
 
 func _ready() -> void:
@@ -104,6 +109,8 @@ func _ready() -> void:
 		dialogue_manager.dialogue_finished.connect(_on_dialogue_finished)
 	if dialogue_manager and dialogue_manager.has_signal("window_choice_made"):
 		dialogue_manager.window_choice_made.connect(_on_window_choice_made)
+
+	GameState.resolved_windows_changed.connect(_on_resolved_windows_changed)
 
 	if building_camera_path == NodePath("") or building_camera == null:
 		push_warning("BalconyTrigger: building_camera_path is not set or invalid.")
@@ -714,7 +721,7 @@ func _process(delta: float) -> void:
 
 	# Mouse-follow "screen floating" during window selection only.
 	var target_pan := Vector2.ZERO
-	if selection_active and not window_focus_active:
+	if selection_active and not window_focus_active and not rain_dialogue_active:
 		var vp := get_viewport()
 		var size := vp.get_visible_rect().size
 		if size.x > 1.0 and size.y > 1.0:
@@ -793,6 +800,10 @@ func _on_dialogue_finished(dialogue_id: String) -> void:
 	if balcony_intro_active and dialogue_id == "balcony_enter":
 		balcony_intro_done = true
 		_maybe_finish_balcony_intro()
+		return
+
+	if dialogue_id == "rain_started":
+		_end_rain_dialogue()
 		return
 
 	if story_window_id == "":
@@ -879,7 +890,41 @@ func _on_stop_watching_pressed() -> void:
 			dialogue_manager.set_external_controls_lock(false)
 		if dialogue_manager and dialogue_manager.has_method("set_stop_watching_visible"):
 			dialogue_manager.set_stop_watching_visible(false)
+		# Dim rain sound as the ending / darken overlay takes over.
+		if rain_effect and rain_effect.has_method("fade_audio"):
+			rain_effect.fade_audio(-40.0, 2.0)
 		ending_ui.open()
+
+func _on_resolved_windows_changed(total: int) -> void:
+	if total >= 3 and not rain_triggered:
+		rain_triggered = true
+		if rain_effect and rain_effect.has_method("trigger_rain"):
+			rain_effect.trigger_rain()
+		# Show rain dialogue after a short delay so the camera has returned to selection mode.
+		var timer := get_tree().create_timer(1.5)
+		timer.timeout.connect(_show_rain_dialogue, Object.CONNECT_ONE_SHOT)
+
+func _show_rain_dialogue() -> void:
+	if dialogue_manager == null or not dialogue_manager.has_method("show_blocked_dialogue"):
+		return
+	rain_dialogue_active = true
+	window_selector.set_enabled(false)
+	Input.set_mouse_mode(Input.MOUSE_MODE_HIDDEN)
+	var lines: Array[String] = [
+		"Oh.",
+		"",
+		"It's raining.",
+		"",
+		"I don't know when it started.",
+		"I was looking at other things."
+	]
+	dialogue_manager.show_blocked_dialogue(lines, "rain_started", false)
+
+func _end_rain_dialogue() -> void:
+	rain_dialogue_active = false
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if selection_active and not window_focus_active:
+		window_selector.set_enabled(true)
 
 func _update_stop_watching_visibility() -> void:
 	if _should_force_stop_watching_visible():

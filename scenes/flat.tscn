@@ -1,4 +1,4 @@
-[gd_scene load_steps=83 format=3 uid="uid://xh154ie053j1"]
+[gd_scene load_steps=84 format=3 uid="uid://xh154ie053j1"]
 
 [ext_resource type="PackedScene" uid="uid://dkhawoo8pj11p" path="res://scenes/character.tscn" id="1_4y78d"]
 [ext_resource type="Material" uid="uid://dk4csq0og1l3w" path="res://assets/new_standard_material_3d.tres" id="2_u0wvv"]
@@ -28,6 +28,7 @@
 [ext_resource type="PackedScene" uid="uid://d3m72xg3yx1j1" path="res://scenes/EndingUI.tscn" id="21_ending_ui"]
 [ext_resource type="PackedScene" uid="uid://cxmwg8jqyosr8" path="res://scenes/PauseMenu.tscn" id="22_pause_menu"]
 [ext_resource type="PackedScene" uid="uid://bq77emhwrg7m0" path="res://scenes/ui/IntroCinematic.tscn" id="23_intro_cinematic"]
+[ext_resource type="Script" path="res://scripts/rain_effect.gd" id="24_rain_effect"]
 [ext_resource type="Texture2D" uid="uid://050rubp4ec8c" path="res://assets/textures/Building_1_baseColor.jpeg" id="25_sedw5"]
 [ext_resource type="Texture2D" uid="uid://8kht62daxoif" path="res://assets/textures/Building_1_metallicRoughness.png" id="26_vgibu"]
 [ext_resource type="Texture2D" uid="uid://cmkois4i88d3r" path="res://assets/textures/Building_1_normal.png" id="27_h8ih5"]
@@ -617,6 +618,7 @@ balcony_breathe_speed = 0.3
 selection_pan_max = Vector2(0.4, 2)
 selection_pan_smoothing_y = 1.0
 selection_pan_y_reach = 0.1
+rain_effect_path = NodePath("../RainEffect")
 pixel_size_in_selection = 8.0
 storyscreen_pixel_size_in_focus = 16.0
 debug_skip_zoom_on_interact = false
@@ -998,6 +1000,9 @@ transform = Transform3D(10.0009, 0, 0, 0, 9.51747, 0, 0, 0, 0.5, 4.65345, 1.2471
 use_collision = true
 size = Vector3(0.567123, 0.523945, 0.528934)
 material = ExtResource("2_u0wvv")
+
+[node name="RainEffect" type="Node" parent="."]
+script = ExtResource("24_rain_effect")
 
 [node name="PostProcess" type="CanvasLayer" parent="."]
 layer = 0
